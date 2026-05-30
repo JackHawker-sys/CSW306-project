@@ -19,6 +19,7 @@ namespace RestaurantManagement.Models
         public decimal Price { get; set; }
 
         public string ImageUrl { get; set; }
+        public bool IsDeleted { get; set; } = false;
 
         // 1 Món ăn có thể nằm trong nhiều OrderDetails
         public virtual ICollection<OrderDetail> OrderDetails { get; set; }

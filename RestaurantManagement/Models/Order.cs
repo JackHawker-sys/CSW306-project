@@ -25,6 +25,7 @@ namespace RestaurantManagement.Models
         public string PaymentStatus { get; set; }
 
         public bool IsFinished { get; set; } = false;
+        public bool IsDeleted { get; set; } = false;
 
         public virtual ICollection<OrderDetail> OrderDetails { get; set; }
     }

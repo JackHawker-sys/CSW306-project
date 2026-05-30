@@ -30,7 +30,8 @@ namespace RestaurantManagement.Models
         [MaxLength(50)]
         public string Status { get; set; } // Pending, Processing, Completed, Cancelled
 
-        public DateTime OrderDate { get; set; } 
+        public DateTime OrderDate { get; set; }
+        public bool IsDeleted { get; set; } = false;
 
         // 1 OrderDetail có thể có nhiều lần đổi trạng thái (Logs)
         public virtual ICollection<OrderLog> OrderLogs { get; set; }
