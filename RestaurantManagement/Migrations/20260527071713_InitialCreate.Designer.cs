@@ -11,7 +11,7 @@ using RestaurantManagement.Data;
 
 namespace RestaurantManagement.Migrations
 {
-    [DbContext(typeof(AppDbContext))]
+    [DbContext(typeof(RestaurantManagementContext))]
     [Migration("20260527071713_InitialCreate")]
     partial class InitialCreate
     {

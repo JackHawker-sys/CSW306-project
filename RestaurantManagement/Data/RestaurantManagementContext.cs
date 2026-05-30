@@ -1,12 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using RestaurantManagement.Entities;
+using RestaurantManagement.Models;
 
 namespace RestaurantManagement.Data
 {
-    public class AppDbContext : DbContext
+    public class RestaurantManagementContext : DbContext
     {
-        
-        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
+        public RestaurantManagementContext(DbContextOptions<RestaurantManagementContext> options) : base(options)
         {
         }
 
@@ -47,7 +46,7 @@ namespace RestaurantManagement.Data
                 .HasOne(ol => ol.OrderDetail)
                 .WithMany(od => od.OrderLogs)
                 .HasForeignKey(ol => ol.OrderDetailId)
-                .OnDelete(DeleteBehavior.Cascade); // Hủy món ăn trong bàn thì tự động xóa luôn lịch sử (Log) đầu bếp nấu món đó.
+                .OnDelete(DeleteBehavior.Restrict); // Bắt buộc phải xóa log trước khi xóa OrderId/OrderDetailId.
         }
     }
 }
