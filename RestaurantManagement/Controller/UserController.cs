@@ -1,8 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using RestaurantManagement.Data;
 using Microsoft.EntityFrameworkCore;
+using RestaurantManagement.Data;
+using RestaurantManagement.DTOs;
+using RestaurantManagement.Models;
 using System.Security.Claims;
+
+
 namespace RestaurantManagement.Controller
 {
     [ApiController]
@@ -20,7 +24,7 @@ namespace RestaurantManagement.Controller
         public IActionResult GetMe()
         {
             var username = User.Identity?.Name;
-            var role = User.FindFirst(ClaimTypes.Role);
+            var role = User.FindFirst(ClaimTypes.Role)?.Value;
             return Ok(new { username, role });
         }
 
@@ -34,5 +38,145 @@ namespace RestaurantManagement.Controller
 
         [HttpGet("active-users")]
         [Authorize(Policy = "ActiveUserOnly")]
+        public IActionResult GetActiveUsers()
+        {
+            var activeUser = _context.Users
+                .Where(u => u.IsActive && !u.IsDeleted)
+                .Select(u => new
+                {
+                    u.UserId,
+                    u.Username,
+                    u.FullName,
+                    u.Email,
+                    u.Phone
+                }).ToList();
+
+            return Ok(activeUser);
+        }
+
+        // Đăng ký khách hàng mới
+        [HttpPost("register")]
+        public async Task<IActionResult> Register([FromForm] RegisterDto register)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            bool userExists = _context.Users
+                .Any(x => x.Username == register.Username);
+
+            if (userExists)
+                return Conflict(new { message = "Username is already existed." });
+
+            bool emailExists = _context.Users
+                .Any(x => x.Email == register.Email);
+
+            if (emailExists)
+                return Conflict(new { message = "Email is already existed." });
+
+            string activeCode = Guid.NewGuid().ToString("N").ToUpper();
+
+            var user = new User
+            {
+                Username = register.Username,
+                FullName = register.Fullname,
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword(register.PasswordHash),
+                Email = register.Email,
+                Phone = register.Phone,
+                ActiveCode = activeCode,
+                Role = "Customer",
+                IsActive = false,
+                IsDeleted = false,
+                IsLocked = false
+            };
+
+            _context.Users.Add(user);
+            await _context.SaveChangesAsync();
+
+            Console.WriteLine($"[Email] To: {user.Email} | Activation Code: {activeCode}");
+
+            return Ok(new { message = "Registration successful. Please activate your account.", activeCode });
+        }
+
+        // Chỉnh sửa thông tin khách hàng
+        [HttpPut("{id}")]
+        [Authorize(Policy = "ActiveUserOnly")]
+        public async Task<IActionResult> Update(int id,[FromForm] UpdateUserModel model)
+        {
+            var user = await _context.Users
+                .FirstOrDefaultAsync(x => x.UserId == id);
+
+            if (user == null)
+                return NotFound(new { message = $"Not found userId {id}" });
+
+            if (!string.IsNullOrWhiteSpace(model.Username))
+            {
+                bool userExists = _context.Users
+                .Any(x => x.Username == model.Username);
+
+                if (userExists)
+                    return Conflict(new { message = "Username is already existed." });
+
+                user.Username = model.Username;
+            }
+
+            if (!string.IsNullOrWhiteSpace(model.Email))
+            {
+                bool emailExists = _context.Users
+                    .Any(x => x.Email == model.Email);
+
+                if (emailExists)
+                    return Conflict(new { message = "Email is already existed." });
+
+                user.Email = model.Email;
+            }
+
+            if (!string.IsNullOrWhiteSpace(model.PasswordHash))
+            {
+                user.PasswordHash= BCrypt.Net.BCrypt.HashPassword(model.PasswordHash);
+            }
+
+            user.FullName = model.Fullname ?? user.FullName;
+            user.Phone = model.Phone ?? user.Phone;
+
+            _context.Users.Update(user);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { 
+                message = $"User ID {id} information updated.",
+                UserId = user.UserId,
+                Username = user.Username,
+                FullName = user.FullName, 
+                Email = user.Email,
+                Phone = user.Phone
+            });
+        }
+
+        // Giả lập kích hoạt tài khoản
+        [HttpPost("activate")]
+        public async Task<IActionResult> ActivateByForm([FromBody] string ActiveCode)
+        {
+            return await Activate(ActiveCode);
+        }
+        private async Task<IActionResult> Activate(string code)
+        {
+            var user = await _context.Users
+                .FirstOrDefaultAsync(u => u.ActiveCode == code && !u.IsDeleted);
+
+            if (user == null)
+            {
+                return NotFound(new { message = "Invalid activation code." });
+            }
+
+            if (user.IsActive)
+                return BadRequest(new { message = "Account is already activated." });
+
+            if (user.IsLocked)
+                return BadRequest(new { message = "Account is locked. Please contact support." });
+
+            user.IsActive = true;
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Account activated successfully. You can now log in." });
+        }
     }
 }

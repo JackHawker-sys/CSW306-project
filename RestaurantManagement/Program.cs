@@ -41,6 +41,9 @@ builder.Services.AddAuthorization(options =>
         return isActiveClaim != null && bool.Parse(isActiveClaim);
     }));
 
+    options.AddPolicy("Admin", policy => policy.RequireRole("Admin"));
+
+    options.AddPolicy("Chef", policy => policy.RequireRole("Chef"));
 });
 
 builder.Services.AddEndpointsApiExplorer();

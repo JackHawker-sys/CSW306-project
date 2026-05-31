@@ -36,7 +36,7 @@ namespace RestaurantManagement.Controller
                 return Unauthorized(new { message = "Wrong password!" });
 
             var token = GenerateJwtToken(user);
-            return Ok(token);
+            return Ok(new {message="Login successfully!",token =$"{token}"});
         }
 
         private string GenerateJwtToken(User user)
