@@ -26,17 +26,13 @@ namespace RestaurantManagement.Controller
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
-            var user = _context.Users
+            var user = await _context.Users
                 .AsNoTracking()
-                .FirstOrDefault(u => u.Username == request.Username);
+                .FirstOrDefaultAsync(u => u.Username == request.Username);
+            var checkPassword = user !=null && BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash);
 
-            if(user == null)
-                return Unauthorized(new { message = "Wrong user!" });
-
-            var checkPassword = BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash);
-
-            if (!checkPassword)
-                return Unauthorized(new { message = "Wrong password!" });
+            if (user == null || !checkPassword)
+                return Unauthorized(new { message = "Invalid username or password!" });
 
             if (!user.IsActive)
                 return Unauthorized(new { message = "User is inactive!" });
