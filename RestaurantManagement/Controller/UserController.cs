@@ -153,11 +153,11 @@ namespace RestaurantManagement.Controller
 
         // Giả lập kích hoạt tài khoản
         [HttpPost("activate")]
-        public async Task<IActionResult> ActivateByForm([FromBody] string ActiveCode)
+        public async Task<IActionResult> ActivateByForm( [FromBody] ActivateRequest request)
         {
-            return await Activate(ActiveCode);
+            return await Activate(request.ActiveCode,request.Email);
         }
-        private async Task<IActionResult> Activate(string code)
+        private async Task<IActionResult> Activate(string code, string email)
         {
             var user = await _context.Users
                 .FirstOrDefaultAsync(u => u.ActiveCode == code && !u.IsDeleted);
@@ -166,6 +166,9 @@ namespace RestaurantManagement.Controller
             {
                 return NotFound(new { message = "Invalid activation code." });
             }
+
+            if(user.Email!=email)
+                return Unauthorized(new {message ="Email is wrong." });
 
             if (user.IsActive)
                 return BadRequest(new { message = "Account is already activated." });

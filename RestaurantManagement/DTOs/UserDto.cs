@@ -5,7 +5,7 @@ namespace RestaurantManagement.DTOs
     public class RegisterDto
     {
         [Required]
-        public string Username {  get; set; }
+        public string Username { get; set; }
         [Required]
         public string PasswordHash { get; set; }
         public string Fullname { get; set; }
@@ -22,5 +22,10 @@ namespace RestaurantManagement.DTOs
         public string? Fullname { get; set; } = null;
         public string? Email { get; set; } = null;
         public string? Phone { get; set; } = null;
+    }
+    public class ActivateRequest
+    {
+        public string Email { get; set; }
+        public string ActiveCode { get; set; }
     }
 }

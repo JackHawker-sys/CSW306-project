@@ -49,7 +49,7 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("ActiveUserOnly", policy => policy.RequireAssertion(context =>
     {
         var isActiveClaim = context.User.FindFirst("IsActive")?.Value;
-        return isActiveClaim != null && bool.Parse(isActiveClaim);
+        return bool.TryParse(isActiveClaim, out var isActive) && isActive;
     }));
 
     options.AddPolicy("Admin", policy => policy.RequireRole("Admin"));

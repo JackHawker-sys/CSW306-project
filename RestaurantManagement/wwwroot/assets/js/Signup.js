@@ -6,7 +6,7 @@ const spinner = document.getElementById('spinner');
 const btnText = document.getElementById('btnText');
 
 // API endpoint configuration (change the URL to match your backend server)
-const API_URL = 'https://localhost:7037/api/user/register'; // Change this URL if needed
+const API_URL = 'https://localhost:44366/api/user/register'; // Change this URL if needed
 
 signupForm.addEventListener('submit', async function (e) {
     e.preventDefault();

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using RestaurantManagement.Data;
@@ -23,9 +24,11 @@ namespace RestaurantManagement.Controller
         }
 
         [HttpPost("login")]
-        public IActionResult Login([FromBody] LoginRequest request)
+        public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
-            var user = _context.Users.FirstOrDefault(u => u.Username == request.Username);
+            var user = _context.Users
+                .AsNoTracking()
+                .FirstOrDefault(u => u.Username == request.Username);
 
             if(user == null)
                 return Unauthorized(new { message = "Wrong user!" });
@@ -34,6 +37,9 @@ namespace RestaurantManagement.Controller
 
             if (!checkPassword)
                 return Unauthorized(new { message = "Wrong password!" });
+
+            if (!user.IsActive)
+                return Unauthorized(new { message = "User is inactive!" });
 
             var token = GenerateJwtToken(user);
             return Ok(new {message="Login successfully!",token =$"{token}"});
@@ -46,8 +52,7 @@ namespace RestaurantManagement.Controller
                 new Claim(ClaimTypes.Name, user.Username),
                 new Claim(ClaimTypes.Role,user.Role),
                 new Claim("UserId", user.UserId.ToString()),
-                new Claim("IsActive", user.IsActive.ToString()),
-                new Claim("EmailVerified", (user.IsActive && user.IsDeleted == false) ? "True" : "False"),
+                new Claim("IsActive", (user.IsActive && user.IsDeleted == false) ? "True" : "False"),
             };
 
             var isAdmin = (user.Role=="Admin");
