@@ -10,6 +10,17 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllers();
 
+// Add CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowLocalhost", policy =>
+    {
+        policy.WithOrigins("http://localhost:5266", "https://localhost:7037")
+            .AllowAnyMethod()
+            .AllowAnyHeader();
+    });
+});
+
 builder.Services.AddDbContext<RestaurantManagementContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DBConnection")));
 
@@ -86,6 +97,14 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+// Enable CORS
+app.UseCors("AllowLocalhost");
+
+// Serve default files (root -> login.html)
+var defaultFiles = new DefaultFilesOptions();
+defaultFiles.DefaultFileNames.Clear();
+defaultFiles.DefaultFileNames.Add("login.html");
+app.UseDefaultFiles(defaultFiles); // must come before UseStaticFiles
 app.UseStaticFiles();
 
 app.UseAuthentication();
@@ -93,5 +112,8 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+// Fallback to login.html for unmatched routes (SPA-like behavior)
+app.MapFallbackToFile("login.html");
 
 app.Run();
