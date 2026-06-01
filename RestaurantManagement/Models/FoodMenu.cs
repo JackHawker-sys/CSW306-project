@@ -8,7 +8,7 @@ namespace RestaurantManagement.Models
         [Key]
         public int FoodId { get; set; }
 
-        [Required(ErrorMessage = "Tên món ăn không được để trống")]
+        [Required(ErrorMessage = "Dish name cannot be empty")]
         [MaxLength(100)]
         public string Name { get; set; }
 
