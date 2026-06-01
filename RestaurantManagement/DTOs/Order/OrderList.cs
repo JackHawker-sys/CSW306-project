@@ -13,7 +13,7 @@ namespace RestaurantManagement.DTOs.Order
     }
 
     //chi tiết 1 đơn — dùng ở GET api/orders/{id}
-    public class OrderDetailResponseDto
+    public class OrderDetailResponseDto // cũng có thể thay = dto của kha nếu cần
     {
         public int OrderId { get; set; }
         public string CustomerName { get; set; }
@@ -25,7 +25,7 @@ namespace RestaurantManagement.DTOs.Order
     }
 
     //1 món trong đơn — dùng trong OrderDetailResponseDto
-    public class OrderDetailItemDto
+    public class OrderDetailItemDto // có thể thay = dto của Kha
     {
         public int OrderDetailId { get; set; }
         public string FoodName { get; set; }
@@ -38,7 +38,7 @@ namespace RestaurantManagement.DTOs.Order
         public List<Log> Logs { get; set; } = new();
     }
 
-    // POST api/orders — khách bắt đầu gọi món
+    // POST api/orders — bắt đầu gọi món
     public class CreateOrderDto
     {
         public int UserId { get; set; }

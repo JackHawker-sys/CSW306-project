@@ -9,7 +9,7 @@ using System.Security.Claims;
 namespace RestaurantManagement.Controllers
 {
     [ApiController]
-    [Route("api/orders")]
+    [Route("api/order")]
     public class OrdersController : ControllerBase
     {
         private readonly RestaurantManagementContext _context;
