@@ -6,7 +6,7 @@ const spinner = document.getElementById('spinner');
 const btnText = document.getElementById('btnText');
 
 // API endpoint configuration (ASP.NET Core backend)
-const API_URL = 'https://localhost:44366/api/auth/login'; // Change to your backend URL if needed
+const API_URL = 'https://localhost:7037/api/auth/login'; // Change to your backend URL if needed
 
 loginForm.addEventListener('submit', async function (e) {
     e.preventDefault();
