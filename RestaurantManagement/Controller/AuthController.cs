@@ -37,6 +37,12 @@ namespace RestaurantManagement.Controller
             if (!user.IsActive)
                 return Unauthorized(new { message = "User is inactive!" });
 
+            if (user.IsDeleted)
+                return Unauthorized(new { message = "User has been deleted!" });
+
+            if (user.IsLocked)
+                return Unauthorized(new { message = "User has been locked!" });
+
             var token = GenerateJwtToken(user);
             return Ok(new {message="Login successfully!",token =$"{token}"});
         }

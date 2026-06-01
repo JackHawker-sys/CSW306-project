@@ -38,12 +38,6 @@ namespace RestaurantManagement.DTOs.Order
         public List<Log> Logs { get; set; } = new();
     }
 
-    // POST api/orders — bắt đầu gọi món
-    public class CreateOrderDto
-    {
-        public int UserId { get; set; }
-    }
-
     //PUT api/orders/{id}/status — cập nhật thanh toán
     public class UpdateOrderStatusDto
     {

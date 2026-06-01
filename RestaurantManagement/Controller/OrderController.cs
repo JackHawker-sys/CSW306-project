@@ -5,6 +5,7 @@ using RestaurantManagement.DTOs.OrderLog;
 using RestaurantManagement.DTOs.Order;
 using RestaurantManagement.Models;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 
 namespace RestaurantManagement.Controllers
 {
@@ -23,6 +24,7 @@ namespace RestaurantManagement.Controllers
         // Lấy danh sách đơn hàng, lọc theo filter
      
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> GetAll([FromQuery] string filter = "InProcessing")
         {
             var query = _context.Orders
@@ -30,6 +32,18 @@ namespace RestaurantManagement.Controllers
                 .Include(o => o.User)
                 .Include(o => o.OrderDetails.Where(od => !od.IsDeleted))
                 .AsQueryable();
+
+            // Kiểm tra nếu là Customer chỉ xem được tất cả order của họ
+            var role = User.FindFirst(ClaimTypes.Role)?.Value;
+            var userIdClaim = User.FindFirst("UserId")?.Value;
+
+            if(role == "Customer")
+            {
+                if (!int.TryParse(userIdClaim, out var userId))
+                    return Unauthorized();
+
+                query = query.Where(o => o.UserId == userId);
+            }
 
             query = filter switch
             {
@@ -44,7 +58,7 @@ namespace RestaurantManagement.Controllers
                 .Select(o => new OrderListDto
                 {
                     OrderId = o.OrderId,
-                    CustomerName = o.User.FullName ?? o.User.Username, // Nếu FullName user null thì lấy userName
+                    CustomerName = o.User.FullName,
                     OrderDate = o.OrderDate,
                     TotalAmount = o.TotalAmount,
                     PaymentStatus = o.PaymentStatus,
@@ -61,6 +75,7 @@ namespace RestaurantManagement.Controllers
         // Chi tiết 1 đơn hàng + danh sách món + log mỗi món
 
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<IActionResult> GetById(int id)
         {
             var order = await _context.Orders
@@ -74,6 +89,15 @@ namespace RestaurantManagement.Controllers
 
             if (order == null)
                 return NotFound(new { message = "Order not found!" });
+
+            // Kiểm tra Customer chỉ xem được order của chính họ
+            var role = User.FindFirst(ClaimTypes.Role)?.Value;
+            if (role == "Customer")
+            {
+                var userIdClaim = User.FindFirst("UserId")?.Value;
+                if (!int.TryParse(userIdClaim, out var userId) || order.UserId != userId)
+                    return Forbid();
+            }
 
             var result = new OrderDetailResponseDto
             {
@@ -109,12 +133,10 @@ namespace RestaurantManagement.Controllers
         // OrderLog không được tự tạo ở Order vì Log gắn với OrderDetailId,
         // Log sẽ được tạo bởi OrderDetailsController khi POST items.
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> Create()
-
         {
-
-            
-            var UserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)); // sẽ chạy được khi có Authentication
+            var UserId = int.Parse(User.FindFirstValue("UserId")); // sẽ chạy được khi có Authentication
 
             var user = await _context.Users
                 .FirstOrDefaultAsync(u => u.UserId == UserId
@@ -131,7 +153,7 @@ namespace RestaurantManagement.Controllers
             if (exist != null)
                 return BadRequest(new
                 {
-                    message = "You already have a unfinished order.",
+                    message = "You already have an unfinished order.",
                     orderId = exist.OrderId
                 });
 
@@ -159,6 +181,7 @@ namespace RestaurantManagement.Controllers
         // Nhân viên cập nhật PaymentStatus
  
         [HttpPut("{id}/status")]
+        [Authorize(Policy ="AdminOrChef")]
         public async Task<IActionResult> UpdateStatus(int id, [FromBody] UpdateOrderStatusDto dto)
         {
             var allowedStatuses = new[]
@@ -206,6 +229,7 @@ namespace RestaurantManagement.Controllers
         // Soft delete — chỉ xóa được khi tất cả món còn Pending
 
         [HttpDelete("{id}")]
+        [Authorize("AdminOrChef")]
         public async Task<IActionResult> Delete(int id)
         {
             var order = await _context.Orders

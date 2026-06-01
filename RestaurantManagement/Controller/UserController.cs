@@ -21,11 +21,20 @@ namespace RestaurantManagement.Controller
 
         [HttpGet("me")]
         [Authorize]
-        public IActionResult GetMe()
+        public async Task<IActionResult> GetMe()
         {
             var username = User.Identity?.Name;
-            var role = User.FindFirst(ClaimTypes.Role)?.Value;
-            return Ok(new { username, role });
+            var user = await _context.Users
+                .FirstOrDefaultAsync(u => u.Username == username);
+
+            return Ok(new
+            {
+                UserId = user.UserId,
+                FullName = username,
+                Role = user.Role,
+                Email = user.Email,
+                Phone = user.Phone
+            });
         }
 
         [HttpGet("dashboard")]
@@ -36,8 +45,9 @@ namespace RestaurantManagement.Controller
             return Ok("Welcome admin!");
         }
 
+        // Admin xem user đang hoạt động
         [HttpGet("active-users")]
-        [Authorize(Policy = "ActiveUserOnly")]
+        [Authorize(Policy = "Admin")]
         public IActionResult GetActiveUsers()
         {
             var activeUser = _context.Users
@@ -99,9 +109,21 @@ namespace RestaurantManagement.Controller
 
         // Chỉnh sửa thông tin khách hàng
         [HttpPut("{id}")]
-        [Authorize(Policy = "ActiveUserOnly")]
-        public async Task<IActionResult> Update(int id,[FromForm] UpdateUserModel model)
+        [Authorize(Policy = "SelfOrAdmin")]
+        public async Task<IActionResult> Update(int id, [FromForm] UpdateUserModel model)
         {
+            var currentUserIdClaim = User.FindFirst("UserId")?.Value;
+            var currentRole = User.FindFirst(ClaimTypes.Role)?.Value;
+
+            if (!int.TryParse(currentUserIdClaim, out var currentUserId))
+                return Unauthorized();
+
+            bool isAdmin = currentRole == "Admin";
+            bool isSelf = currentUserId == id;
+
+            if (!isAdmin && !isSelf)
+                return Forbid();
+
             var user = await _context.Users
                 .FirstOrDefaultAsync(x => x.UserId == id);
 
@@ -132,7 +154,7 @@ namespace RestaurantManagement.Controller
 
             if (!string.IsNullOrWhiteSpace(model.PasswordHash))
             {
-                user.PasswordHash= BCrypt.Net.BCrypt.HashPassword(model.PasswordHash);
+                user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(model.PasswordHash);
             }
 
             user.FullName = model.Fullname ?? user.FullName;
@@ -141,21 +163,77 @@ namespace RestaurantManagement.Controller
             _context.Users.Update(user);
             await _context.SaveChangesAsync();
 
-            return Ok(new { 
+            return Ok(new
+            {
                 message = $"User ID {id} information updated.",
                 UserId = user.UserId,
                 Username = user.Username,
-                FullName = user.FullName, 
+                FullName = user.FullName,
                 Email = user.Email,
                 Phone = user.Phone
             });
         }
 
+        // Lock usser
+        [HttpPatch("{id}/toggle-lock")]
+        [Authorize(Policy = "Admin")]
+        public async Task<IActionResult> ToggleLock(int id)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.UserId == id);
+            if (user == null)
+                return NotFound(new { message = $"User ID {id} not found." });
+
+            user.IsLocked = !user.IsLocked;
+            return Ok(new
+            {
+                message = $"User ID {id} lock status: {user.IsLocked}."
+            });
+        }
+
+        // Xóa User
+        [HttpDelete("{id}")]
+        [Authorize(Policy = "Admin")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.UserId == id);
+            if (user == null)
+                return NotFound(new { message = $"User ID {id} not found." });
+
+            if (user.Role == "Admin")
+                return Unauthorized(new { message = "Can not delete admin!" });
+
+            user.IsDeleted = true;
+            return Ok(new { message = $"User ID {id} has been deleted!" });
+        }
+
+        // Lấy active code mới
+        [HttpPost("new-active-code")]
+        public async Task<IActionResult> GetNewActiveCode([FromBody] LoginRequest model)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == model.Username);
+            if (user == null)
+                return Unauthorized(new { message = "Wrong Username or Password!" });
+
+            if (user.IsActive)
+                return BadRequest(new { message = "Account is already activated." });
+
+            string activeCode = Guid.NewGuid().ToString("N").ToUpper();
+
+            user.ActiveCode = activeCode;
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new
+            {
+                message = "Change active code.",
+                ActiveCode = activeCode
+            });
+        }
         // Giả lập kích hoạt tài khoản
         [HttpPost("activate")]
-        public async Task<IActionResult> ActivateByForm( [FromBody] ActivateRequest request)
+        public async Task<IActionResult> ActivateByForm([FromBody] ActivateRequest request)
         {
-            return await Activate(request.ActiveCode,request.Email);
+            return await Activate(request.ActiveCode, request.Email);
         }
         private async Task<IActionResult> Activate(string code, string email)
         {
@@ -167,8 +245,8 @@ namespace RestaurantManagement.Controller
                 return NotFound(new { message = "Invalid activation code." });
             }
 
-            if(user.Email!=email)
-                return Unauthorized(new {message ="Email is wrong." });
+            if (user.Email != email)
+                return Unauthorized(new { message = "Email is wrong." });
 
             if (user.IsActive)
                 return BadRequest(new { message = "Account is already activated." });

@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using RestaurantManagement.Data;
+using System.Security.Claims;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -51,6 +52,21 @@ builder.Services.AddAuthorization(options =>
         var isActiveClaim = context.User.FindFirst("IsActive")?.Value;
         return bool.TryParse(isActiveClaim, out var isActive) && isActive;
     }));
+
+    options.AddPolicy("SelfOrAdmin", policy => policy.RequireAssertion(context =>
+    {
+        var isActiveClaim = context.User.FindFirst("IsActive")?.Value;
+        if (!bool.TryParse(isActiveClaim, out var isActive) || !isActive)
+            return false;
+
+        var role = context.User.FindFirst(ClaimTypes.Role)?.Value;
+        if (role == "Admin")
+            return true;
+
+        return true;
+    }));
+
+    options.AddPolicy("AdminOrChef", policy => policy.RequireRole("Admin", "Chef"));
 
     options.AddPolicy("Admin", policy => policy.RequireRole("Admin"));
 
