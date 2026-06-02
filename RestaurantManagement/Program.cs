@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using RestaurantManagement.Data;
+using RestaurantManagement.Models;
+using RestaurantManagement.Services;
 using System.Security.Claims;
 using System.Text;
 
@@ -101,6 +103,10 @@ builder.Services.AddSwaggerGen(c =>
     }
 });
 });
+
+// Lets the program read EmailsSettings in appsetting.json
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+builder.Services.AddTransient<IEmailService, EmailService>();
 
 var app = builder.Build();
 
