@@ -13,19 +13,14 @@ namespace RestaurantManagement.Controller
     {
         private readonly RestaurantManagementContext _context;
 
-        //IWebHostEnvironment được sử dụng để truy cập thông tin về môi trường hosting, như đường dẫn đến wwwroot để lưu ảnh.
-        private readonly IWebHostEnvironment _env;
-
         private static readonly string[] AllowedExtensions = { ".jpg", ".jpeg", ".png" };
 
-        public FoodMenuController(RestaurantManagementContext context, IWebHostEnvironment env)
+        public FoodMenuController(RestaurantManagementContext context)
         {
             _context = context;
-            _env = env;
         }
 
         [HttpGet]
-        [Authorize(Roles = "Admin, Customer")]
         public async Task<IActionResult> GetAll()
         {
             var menus = await _context.FoodMenus
@@ -44,7 +39,6 @@ namespace RestaurantManagement.Controller
         }
 
         [HttpGet("{id}")]
-        [Authorize(Roles = "Admin, Customer")]
         public async Task<IActionResult> GetById(int id)
         {
             var food = await _context.FoodMenus
@@ -112,9 +106,9 @@ namespace RestaurantManagement.Controller
             if (food == null)
                 return NotFound(new { message = $"Food item with ID {id} was not found." });
 
-            food.Name = dto.Name;
-            food.Description = dto.Description;
-            food.Price = dto.Price;
+            food.Name = dto.Name ?? food.Name;
+            food.Description = dto.Description??food.Description;
+            food.Price = dto.Price ?? food.Price;
 
             // Chỉ thay thế ảnh khi có ảnh được upload
             if (dto.Image != null)
@@ -133,7 +127,7 @@ namespace RestaurantManagement.Controller
 
             return Ok(food);
         }
-
+        // Xóa món ăn với chức vụ là admin
         [HttpDelete("{id}")]
         [Authorize(Policy = "Admin")]
         public async Task<IActionResult> Delete(int id)
@@ -160,7 +154,7 @@ namespace RestaurantManagement.Controller
 
             // Tạo tên duy nhất, tránh bị trùng
             var fileName = $"{Guid.NewGuid()}{extension}";
-            var folderPath = Path.Combine(_env.WebRootPath, "assets", "images", "FoodMenu");
+            var folderPath = Path.Combine("wwwroot", "assets", "images", "FoodMenu");
 
             Directory.CreateDirectory(folderPath);
 
@@ -173,10 +167,10 @@ namespace RestaurantManagement.Controller
         private void DeleteImageFile(string imageUrl)
         {
             var relativePath = imageUrl.TrimStart('/').Replace('/', Path.DirectorySeparatorChar);
-            var absolutePath = Path.Combine(_env.WebRootPath, relativePath);
+            var deletePath = Path.Combine("wwwroot", relativePath);
 
-            if (System.IO.File.Exists(absolutePath))
-                System.IO.File.Delete(absolutePath);
+            if (System.IO.File.Exists(deletePath))
+                System.IO.File.Delete(deletePath);
         }
     }
 }

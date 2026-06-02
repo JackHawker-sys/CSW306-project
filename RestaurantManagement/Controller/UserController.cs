@@ -130,28 +130,6 @@ namespace RestaurantManagement.Controller
             if (user == null)
                 return NotFound(new { message = $"Not found userId {id}" });
 
-            if (!string.IsNullOrWhiteSpace(model.Username))
-            {
-                bool userExists = _context.Users
-                .Any(x => x.Username == model.Username);
-
-                if (userExists)
-                    return Conflict(new { message = "Username is already existed." });
-
-                user.Username = model.Username;
-            }
-
-            if (!string.IsNullOrWhiteSpace(model.Email))
-            {
-                bool emailExists = _context.Users
-                    .Any(x => x.Email == model.Email);
-
-                if (emailExists)
-                    return Conflict(new { message = "Email is already existed." });
-
-                user.Email = model.Email;
-            }
-
             if (!string.IsNullOrWhiteSpace(model.PasswordHash))
             {
                 user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(model.PasswordHash);
