@@ -50,6 +50,8 @@ namespace RestaurantManagement.Controller
             var token = GenerateJwtToken(user);
             return Ok(new {message="Login successfully!",token =$"{token}"});
         }
+
+        // Send activecode to email
         [HttpPost("send-verification")]
         public async Task<IActionResult> SendVerification([FromBody] string email)
         {
