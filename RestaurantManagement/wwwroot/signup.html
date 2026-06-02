@@ -70,65 +70,6 @@
         <div class="login-link" id="loginLink">
             <p>Already have an account? <a href="login.html">Sign in</a></p>
         </div>
-
-        <!-- Activation Form (Hidden by default) -->
-        <div id="activationForm" class="activation-form" style="display: none;">
-            <div class="error-message" id="activationErrorMessage"></div>
-            <div class="success-message" id="activationSuccessMessage"></div>
-
-            <div class="signup-header">
-                <h2>Activate Your Account</h2>
-                <p>Please enter the activation code sent to your email</p>
-            </div>
-
-            <form id="activateCodeForm" style="display: none;">
-                <div class="form-group">
-                    <label for="activationCode"><i class="fas fa-key"></i> Activation Code</label>
-                    <input type="text" id="activationCode" name="activationCode" placeholder="Enter your activation code" required>
-                </div>
-
-                <button type="submit" class="signup-btn" id="activateBtn">
-                    <span class="spinner" id="activationSpinner"></span>
-                    <span id="activateBtnText">Activate Account</span>
-                </button>
-            </form>
-
-            <div class="resend-code-link">
-                <p>Didn't receive the code? <a href="#" id="resendCodeBtn">Request new code</a></p>
-            </div>
-        </div>
-
-        <!-- Request New Code Form (Hidden by default) -->
-        <div id="requestNewCodeForm" class="activation-form" style="display: none;">
-            <div class="signup-header">
-                <h2>Request New Activation Code</h2>
-                <p>Verify your account details to receive a new code</p>
-            </div>
-
-            <div class="error-message" id="requestCodeErrorMessage"></div>
-            <div class="success-message" id="requestCodeSuccessMessage"></div>
-
-            <form id="newCodeForm">
-                <div class="form-group">
-                    <label for="requestCodeUsername"><i class="fas fa-user"></i> Username</label>
-                    <input type="text" id="requestCodeUsername" name="requestCodeUsername" placeholder="Enter your username" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="requestCodePassword"><i class="fas fa-lock"></i> Password</label>
-                    <input type="password" id="requestCodePassword" name="requestCodePassword" placeholder="Enter your password" required>
-                </div>
-
-                <button type="submit" class="signup-btn" id="requestCodeBtn">
-                    <span class="spinner" id="requestCodeSpinner"></span>
-                    <span id="requestCodeBtnText">Send New Code</span>
-                </button>
-            </form>
-
-            <div class="resend-code-link">
-                <p><a href="#" id="backToActivationBtn">Back to activation</a></p>
-            </div>
-        </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>

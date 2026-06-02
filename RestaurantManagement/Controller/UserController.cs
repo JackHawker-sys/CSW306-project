@@ -86,6 +86,10 @@ namespace RestaurantManagement.Controller
             if (emailExists)
                 return Conflict(new { message = "Email is already existed." });
 
+            // Validate email domain - only @gmail.com or @eiu.edu.vn
+            if (!register.Email.EndsWith("@gmail.com") && !register.Email.EndsWith("@eiu.edu.vn"))
+                return BadRequest(new { message = "Email must be @gmail.com or @eiu.edu.vn!" });
+
             string activeCode = Guid.NewGuid().ToString("N").ToUpper();
 
             var user = new User
