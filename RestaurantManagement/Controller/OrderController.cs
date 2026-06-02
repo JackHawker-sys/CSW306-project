@@ -110,8 +110,8 @@ namespace RestaurantManagement.Controllers
                 Items = order.OrderDetails.Select(od => new OrderDetailItemDto
                 {
                     OrderDetailId = od.OrderDetailId,
-                    FoodName = od.FoodMenu?.Name,
-                    FoodImage = od.FoodMenu?.ImageUrl,
+                    FoodName = od.FoodMenu.Name,
+                    FoodImage = od.FoodMenu.ImageUrl,
                     Quantity = od.Quantity,
                     UnitPrice = od.UnitPrice,
                     Subtotal = od.UnitPrice * od.Quantity,
