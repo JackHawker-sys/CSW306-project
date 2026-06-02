@@ -5,8 +5,10 @@ using Microsoft.IdentityModel.Tokens;
 using RestaurantManagement.Data;
 using RestaurantManagement.DTOs;
 using RestaurantManagement.Models;
+using RestaurantManagement.Services;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 namespace RestaurantManagement.Controller
 {
@@ -16,11 +18,13 @@ namespace RestaurantManagement.Controller
     {
         private readonly RestaurantManagementContext _context;
         private readonly IConfiguration _configuration;
+        private readonly IEmailService _emailService;
 
-        public AuthController(RestaurantManagementContext context, IConfiguration configuration)
+        public AuthController(RestaurantManagementContext context, IConfiguration configuration, IEmailService emailService)
         {
             _context = context;
             _configuration = configuration;
+            _emailService = emailService;
         }
 
         [HttpPost("login")]
@@ -45,6 +49,22 @@ namespace RestaurantManagement.Controller
 
             var token = GenerateJwtToken(user);
             return Ok(new {message="Login successfully!",token =$"{token}"});
+        }
+        [HttpPost("send-verification")]
+        public async Task<IActionResult> SendVerification([FromBody] string email)
+        {
+            var user = await _context.Users
+                .FirstOrDefaultAsync(u => u.Email == email);
+
+            if (user == null)
+                return NotFound(new { message = "Email not found." });
+
+            await _context.SaveChangesAsync();
+
+            // Gửi email
+            await _emailService.SendVerificationCodeAsync(email, user.ActiveCode);
+
+            return Ok(new { message = "Verification code sent." });
         }
 
         private string GenerateJwtToken(User user)

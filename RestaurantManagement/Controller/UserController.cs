@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using RestaurantManagement.Data;
 using RestaurantManagement.DTOs;
 using RestaurantManagement.Models;
+using RestaurantManagement.Services;
 using System.Security.Claims;
 
 
@@ -14,9 +15,11 @@ namespace RestaurantManagement.Controller
     public class UserController : ControllerBase
     {
         private readonly RestaurantManagementContext _context;
-        public UserController(RestaurantManagementContext context)
+        private readonly IEmailService _emailService;
+        public UserController(RestaurantManagementContext context, IEmailService emailService)
         {
             _context = context;
+            _emailService = emailService;
         }
 
         [HttpGet("me")]
@@ -102,7 +105,7 @@ namespace RestaurantManagement.Controller
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
-            Console.WriteLine($"[Email] To: {user.Email} | Activation Code: {activeCode}");
+            await _emailService.SendVerificationCodeAsync(user.Email, activeCode);
 
             return Ok(new { message = "Registration successful. Please activate your account.", activeCode });
         }
