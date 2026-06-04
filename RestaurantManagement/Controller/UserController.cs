@@ -209,29 +209,7 @@ namespace RestaurantManagement.Controller
             return Ok(new { message = $"User ID {id} has been deleted!" });
         }
 
-        // Lấy active code mới
-        [HttpPost("new-active-code")]
-        public async Task<IActionResult> GetNewActiveCode([FromBody] LoginRequest model)
-        {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == model.Username);
-            if (user == null)
-                return Unauthorized(new { message = "Wrong Username or Password!" });
-
-            if (user.IsActive)
-                return BadRequest(new { message = "Account is already activated." });
-
-            string activeCode = Guid.NewGuid().ToString("N").ToUpper();
-
-            user.ActiveCode = activeCode;
-
-            await _context.SaveChangesAsync();
-
-            return Ok(new
-            {
-                message = "Change active code.",
-                ActiveCode = activeCode
-            });
-        }
+        
         // Giả lập kích hoạt tài khoản
         [HttpPost("activate")]
         public async Task<IActionResult> ActivateByForm([FromBody] ActivateRequest request)
