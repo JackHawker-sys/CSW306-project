@@ -1,5 +1,4 @@
-﻿// admin-dashboard.js - Admin can confirm orders (Ready -> Completed + Paid)
-const API_BASE = 'https://localhost:7037';
+﻿const API_BASE = 'https://localhost:7037';
 let currentOrderFilter = 'processing';
 let currentOrderIdForAction = null;
 let currentAction = null;
@@ -101,7 +100,6 @@ confirmNo.addEventListener('click', () => {
     currentAction = null;
 });
 
-// ==================== LOAD ORDERS ====================
 async function loadOrders() {
     if (!ordersTableBody) return;
     ordersTableBody.innerHTML = '<tr><td colspan="7" class="loading-cell"><div class="spinner"></div> Loading...</td></tr>';
@@ -136,7 +134,6 @@ function renderOrdersTable() {
 
     switch (currentOrderFilter) {
         case 'processing':
-            // Orders có ít nhất 1 món chưa Completed (Pending/Processing/Ready) và chưa thanh toán
             filteredOrders = allOrders.filter(o =>
                 !o.isFinished &&
                 o.paymentStatus !== 'Paid' &&
@@ -230,7 +227,6 @@ function getStatusClass(order) {
     return 'status-processing';
 }
 
-// ==================== CONFIRM ORDER (Admin) ====================
 async function confirmOrder(orderId) {
     try {
         const res = await fetch(`${API_BASE}/api/order/${orderId}/confirm`, {
@@ -257,7 +253,6 @@ async function confirmOrder(orderId) {
     }
 }
 
-// ==================== DENY ORDER (Cancel) ====================
 async function denyOrder(orderId) {
     try {
         // Get all order details for this order
@@ -293,7 +288,7 @@ async function denyOrder(orderId) {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ paymentStatus: 'Cancelled' })  // Giữ nguyên chữ hoa chữ thường
+            body: JSON.stringify({ paymentStatus: 'Cancelled' }) 
         });
 
         if (!orderRes.ok) {
@@ -314,7 +309,6 @@ async function denyOrder(orderId) {
     }
 }
 
-// ==================== VIEW ORDER DETAILS ====================
 window.viewOrderDetails = async function (orderId) {
     try {
         const res = await fetch(`${API_BASE}/api/order/${orderId}`, {
@@ -405,7 +399,6 @@ function openConfirmModal(orderId, action) {
     confirmModal.classList.add('show');
 }
 
-// ==================== LOAD EMPLOYEES ====================
 async function loadEmployees() {
     if (!employeesTableBody) return;
     employeesTableBody.innerHTML = '<tr><td colspan="5" class="loading-cell"><div class="spinner"></div> Loading...</td></tr>';
@@ -439,7 +432,6 @@ async function loadEmployees() {
     }
 }
 
-// ==================== LOAD REVENUE ====================
 async function loadRevenue() {
     if (!revenueTableBody) return;
     revenueTableBody.innerHTML = '<tr><td colspan="5" class="loading-cell"><div class="spinner"></div> Loading...</td></tr>';
@@ -482,7 +474,6 @@ async function loadRevenue() {
     }
 }
 
-// ==================== HELPER FUNCTIONS ====================
 function formatCurrencyVND(amount) {
     if (amount === undefined || amount === null) return '₫0';
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);

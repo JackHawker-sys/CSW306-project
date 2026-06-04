@@ -193,7 +193,6 @@ function formatWaitingTime(waitingMinutes) {
 }
 
 // Check if order has any items that are not Completed (for Chef to see)
-// Bỏ qua các món đã Ready vì Ready là do Admin xử lý
 function hasIncompleteItems(order) {
     if (!order.details || order.details.length === 0) return false;
     // Chỉ hiển thị order còn món Pending hoặc Processing (không hiển thị order chỉ còn Ready)

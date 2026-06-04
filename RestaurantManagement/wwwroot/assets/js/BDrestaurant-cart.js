@@ -1,7 +1,4 @@
-﻿// BDrestaurant-cart.js
-// Xử lý nút Order Now trên trang chủ - Chuyển hướng sang menu.html
-
-document.addEventListener('DOMContentLoaded', function () {
+﻿document.addEventListener('DOMContentLoaded', function () {
     // Xử lý tất cả nút Order Now trong section food-menu
     const orderButtons = document.querySelectorAll('.food .order-btn');
 
@@ -10,16 +7,13 @@ document.addEventListener('DOMContentLoaded', function () {
             e.preventDefault();
             e.stopPropagation();
 
-            // Chuyển hướng sang trang menu để người dùng chọn món
             window.location.href = 'menu.html';
         });
     });
 
-    // Giữ nguyên chức năng cart cho các nút khác (nếu có)
     initCartUIStatic();
 });
 
-// Các hàm hỗ trợ cart sidebar (giữ nguyên)
 function showToast(message, type = 'success') {
     const toast = document.createElement('div');
     toast.textContent = message;

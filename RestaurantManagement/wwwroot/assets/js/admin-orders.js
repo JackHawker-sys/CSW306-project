@@ -1,6 +1,4 @@
-﻿// admin-orders.js - Admin Order Management
-
-const API_BASE = 'https://localhost:7037';
+﻿const API_BASE = 'https://localhost:7037';
 let currentFilter = 'all';
 let allOrders = [];
 
