@@ -1,4 +1,5 @@
-﻿const API_BASE = 'https://localhost:7037';
+﻿// admin-dashboard.js
+const API_BASE = 'https://localhost:7037';
 let currentOrderFilter = 'processing';
 let currentOrderIdForAction = null;
 let currentAction = null;
@@ -122,6 +123,11 @@ async function loadOrders() {
             }
         }
 
+        // Sort orders by OrderDate ascending (oldest first)
+        allOrders.sort((a, b) => {
+            return new Date(a.orderDate) - new Date(b.orderDate);
+        });
+
         renderOrdersTable();
     } catch (error) {
         console.error('Load orders error:', error);
@@ -174,7 +180,7 @@ function renderOrdersTable() {
                 <td>${escapeHtml(order.customerName || 'N/A')}</td>
                 <td>${new Date(order.orderDate).toLocaleString()}</td>
                 <td>${order.totalItems || 0}</td>
-                <td>${formatCurrencyVND(order.totalAmount)}</td>
+                <td>${formatCurrencyUSD(order.totalAmount)}</td>
                 <td>
                     <span class="status-badge ${getStatusClass(order)}">
                         ${getOrderStatusText(order)}
@@ -281,14 +287,14 @@ async function denyOrder(orderId) {
             }
         }
 
-        // Update order to Cancelled - SỬA LỖI: dùng đúng status value
+        // Update order to Cancelled
         const orderRes = await fetch(`${API_BASE}/api/order/${orderId}/status`, {
             method: 'PUT',
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ paymentStatus: 'Cancelled' }) 
+            body: JSON.stringify({ paymentStatus: 'Cancelled' })
         });
 
         if (!orderRes.ok) {
@@ -329,10 +335,10 @@ window.viewOrderDetails = async function (orderId) {
                     <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #eee;">
                         <div>
                             <strong>${escapeHtml(item.foodName)}</strong> x ${item.quantity}
-                            <div style="font-size: 12px; color: #666;">Unit: ${formatCurrencyVND(item.unitPrice)}</div>
+                            <div style="font-size: 12px; color: #666;">Unit: ${formatCurrencyUSD(item.unitPrice)}</div>
                         </div>
                         <div style="text-align: right;">
-                            <div>${formatCurrencyVND(subtotal)}</div>
+                            <div>${formatCurrencyUSD(subtotal)}</div>
                             <span class="status-badge ${item.status === 'Completed' ? 'status-completed' : item.status === 'Cancelled' ? 'status-cancelled' : item.status === 'Ready' ? 'status-processing' : 'status-processing'}">
                                 ${item.status}
                             </span>
@@ -357,7 +363,7 @@ window.viewOrderDetails = async function (orderId) {
                 <hr>
                 <div style="display: flex; justify-content: space-between; font-weight: 800; margin-top: 15px; font-size: 18px;">
                     <span>Total:</span>
-                    <span style="color: var(--dark-green);">${formatCurrencyVND(total)}</span>
+                    <span style="color: var(--dark-green);">${formatCurrencyUSD(total)}</span>
                 </div>
                 <button onclick="closeDetailModal()" class="refresh-btn" style="margin-top: 20px; width: 100%;">Close</button>
             </div>
@@ -450,7 +456,7 @@ async function loadRevenue() {
         const processingOrders = orders.filter(o => !o.isFinished && o.paymentStatus !== 'Paid' && o.paymentStatus !== 'Cancelled');
         const totalRevenue = completedOrders.reduce((sum, o) => sum + (o.totalAmount || 0), 0);
 
-        document.getElementById('totalRevenue').innerHTML = formatCurrencyVND(totalRevenue);
+        document.getElementById('totalRevenue').innerHTML = formatCurrencyUSD(totalRevenue);
         document.getElementById('completedOrdersCount').textContent = completedOrders.length;
         document.getElementById('processingOrdersCount').textContent = processingOrders.length;
 
@@ -459,13 +465,18 @@ async function loadRevenue() {
             return;
         }
 
+        // Sort completed orders by OrderDate ascending
+        completedOrders.sort((a, b) => {
+            return new Date(a.orderDate) - new Date(b.orderDate);
+        });
+
         revenueTableBody.innerHTML = completedOrders.map(order => `
             <tr>
                 <td>#${order.orderId}</td>
                 <td>${escapeHtml(order.customerName || 'N/A')}</td>
                 <td>${new Date(order.orderDate).toLocaleString()}</td>
                 <td>${new Date(order.orderDate).toLocaleString()}</td>
-                <td style="font-weight: 700; color: var(--dark-green);">${formatCurrencyVND(order.totalAmount)}</td>
+                <td style="font-weight: 700; color: var(--dark-green);">${formatCurrencyUSD(order.totalAmount)}</td>
             </tr>
         `).join('');
     } catch (error) {
@@ -474,9 +485,13 @@ async function loadRevenue() {
     }
 }
 
-function formatCurrencyVND(amount) {
-    if (amount === undefined || amount === null) return '₫0';
-    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
+// Format currency as USD
+function formatCurrencyUSD(amount) {
+    if (amount === undefined || amount === null) return '$0';
+    if (amount % 1 === 0) {
+        return `$${amount.toLocaleString('en-US')}`;
+    }
+    return `$${amount.toFixed(2)}`;
 }
 
 function escapeHtml(str) {
@@ -494,10 +509,28 @@ function showToast(message, type = 'success') {
     setTimeout(() => toast.remove(), 3000);
 }
 
+// Auto refresh every 30 seconds
+let autoRefreshInterval = null;
+
+function startAutoRefresh() {
+    if (autoRefreshInterval) clearInterval(autoRefreshInterval);
+    autoRefreshInterval = setInterval(() => {
+        loadOrders();
+        loadRevenue();
+    }, 30000);
+}
+
 // Load initial data
 document.addEventListener('DOMContentLoaded', () => {
     const adminName = localStorage.getItem('adminName') || 'Admin';
     const adminNameSpan = document.getElementById('adminName');
     if (adminNameSpan) adminNameSpan.textContent = adminName;
     loadOrders();
+    loadEmployees(); // Preload employees but keep hidden
+    startAutoRefresh();
+});
+
+// Cleanup on page unload
+window.addEventListener('beforeunload', () => {
+    if (autoRefreshInterval) clearInterval(autoRefreshInterval);
 });

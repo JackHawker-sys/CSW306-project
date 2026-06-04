@@ -1,7 +1,4 @@
-﻿// chef-orders.js - Chef Order Management with Priority
-// Chef chỉ có thể chuyển: Pending -> Processing -> Ready
-
-const API_BASE = 'https://localhost:7037';
+﻿const API_BASE = 'https://localhost:7037';
 let allOrders = [];
 let currentFilter = 'all';
 let autoRefreshInterval = null;
@@ -82,10 +79,10 @@ if (confirmNo) {
     });
 }
 
-// Update order detail status - Chef chỉ chuyển Processing -> Ready
+// Update order detail status
 async function updateOrderDetailStatus(orderDetailId, newStatus) {
     try {
-        // Chef chỉ được phép chuyển sang "Ready", không phải "Completed"
+        // Chef chỉ được phép chuyển sang "Ready"
         if (newStatus === 'Completed') {
             showToast('Only Admin can confirm completion!', 'error');
             return;
@@ -205,7 +202,6 @@ function hasIncompleteItems(order) {
 function renderOrders() {
     if (!ordersGrid) return;
 
-    // Chỉ lấy orders có active items (Pending hoặc Processing) - không lấy order chỉ có Ready
     let activeOrders = allOrders.filter(order => hasIncompleteItems(order));
 
     // Apply filter based on status
@@ -224,7 +220,6 @@ function renderOrders() {
             break;
     }
 
-    // Sắp xếp theo thứ tự order cũ lên đầu (tăng dần theo orderDate)
     filteredOrders.sort((a, b) => {
         return new Date(a.orderDate) - new Date(b.orderDate);
     });
@@ -250,7 +245,7 @@ function renderOrders() {
         const waitingTimeClass = getWaitingTimeClass(waitingMinutes);
         const waitingDisplay = formatWaitingTime(waitingMinutes);
 
-        // Get items that are Pending or Processing (chưa Ready)
+        // Get items that are Pending or Processing
         const activeItems = order.details.filter(d =>
             !d.isDeleted && (d.status === 'Pending' || d.status === 'Processing')
         );

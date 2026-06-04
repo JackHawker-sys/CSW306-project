@@ -1,6 +1,4 @@
-﻿// checkout.js - Customer creates NEW order each time
-
-const API_BASE = 'https://localhost:7037';
+﻿const API_BASE = 'https://localhost:7037';
 const CHECKOUT_CART_KEY = 'checkout_cart';
 
 let orderItems = [];
@@ -46,15 +44,15 @@ function renderOrderSummary() {
             <div class="checkout-item">
                 <div class="checkout-item-info">
                     <div class="checkout-item-name">${escapeHtml(item.name)}</div>
-                    <div class="checkout-item-price">${formatCurrencyVND(item.price)}</div>
+                    <div class="checkout-item-price">${formatCurrencyUSD(item.price)}</div>
                 </div>
                 <div class="checkout-item-quantity">x${item.quantity}</div>
-                <div class="checkout-item-subtotal">${formatCurrencyVND(subtotal)}</div>
+                <div class="checkout-item-subtotal">${formatCurrencyUSD(subtotal)}</div>
             </div>
         `;
     }).join('');
 
-    document.getElementById('orderTotal').textContent = formatCurrencyVND(total);
+    document.getElementById('orderTotal').textContent = formatCurrencyUSD(total);
 }
 
 function setupPaymentOptions() {
@@ -231,7 +229,7 @@ function showReceipt(order, createdDetails) {
             return `
                 <div class="receipt-item">
                     <span>${escapeHtml(detail.foodName)} x ${detail.quantity}</span>
-                    <span>${formatCurrencyVND(subtotal)}</span>
+                    <span>${formatCurrencyUSD(subtotal)}</span>
                     <span class="status-badge status-pending" style="margin-left: 10px;">${detail.status || 'Pending'}</span>
                 </div>
             `;
@@ -244,7 +242,7 @@ function showReceipt(order, createdDetails) {
         </div>
         <div class="receipt-total">
             <span>Total:</span>
-            <span>${formatCurrencyVND(total)}</span>
+            <span>${formatCurrencyUSD(total)}</span>
         </div>
         <p style="margin-top: 15px; color: #666; font-size: 13px;">
             <i class="fa-regular fa-clock"></i> Order #${order.orderId || currentOrderId || 'N/A'}<br>
@@ -268,9 +266,13 @@ function showError(message) {
     document.getElementById('errorMsg').textContent = message;
 }
 
-function formatCurrencyVND(amount) {
-    if (amount === undefined || amount === null) return '₫0';
-    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
+// Format currency as USD
+function formatCurrencyUSD(amount) {
+    if (amount === undefined || amount === null) return '$0';
+    if (amount % 1 === 0) {
+        return `$${amount.toLocaleString('en-US')}`;
+    }
+    return `$${amount.toFixed(2)}`;
 }
 
 function escapeHtml(str) {

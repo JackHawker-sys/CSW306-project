@@ -1,5 +1,4 @@
-﻿// cart.js
-const CART_STORAGE_KEY = 'restaurant_cart';
+﻿const CART_STORAGE_KEY = 'restaurant_cart';
 
 class CartManager {
     constructor() {
