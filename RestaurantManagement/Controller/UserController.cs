@@ -66,6 +66,26 @@ namespace RestaurantManagement.Controller
 
             return Ok(activeUser);
         }
+        
+        // Get Chef for Admin Dashboard
+        [HttpGet("chefs")]
+        [Authorize(Policy = "Admin")]
+        public async Task<IActionResult> GetChefs()
+        {
+            var chefs = await _context.Users
+                .Where(u => u.IsActive && !u.IsDeleted && u.Role == "Chef")
+                .Select(u => new
+                {
+                    u.UserId,
+                    u.Username,
+                    u.FullName,
+                    u.Email,
+                    u.Phone,
+                    u.Role
+                }).ToListAsync();
+
+            return Ok(chefs);
+        }
 
         // Đăng ký khách hàng mới
         [HttpPost("register")]

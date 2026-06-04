@@ -1,0 +1,619 @@
+﻿* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --main-yellow: #FFD700;
+    --dark-green: #006400;
+    --green-hover: #004d00;
+    --bg-light: #FFFFFF;
+    --bg-card: #F2F2F2;
+    --text-dark: #222222;
+    --text-muted: #666666;
+    --shadow: 0 4px 20px rgba(0, 0, 0, 0.10);
+    --radius: 10px;
+}
+
+html, body {
+    font-family: 'Open Sans', sans-serif;
+    background-color: var(--bg-light);
+    color: var(--text-dark);
+}
+
+h1, h2, h3, h4 {
+    font-family: 'Nunito', sans-serif;
+}
+
+/* ── Navbar ──────────────────────────────── */
+.menu-navbar {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background-color: var(--dark-green);
+    border-bottom: 4px solid var(--main-yellow);
+}
+
+.navbar-inner {
+    max-width: 1140px;
+    margin: 0 auto;
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.navbar-brand-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+}
+
+.navbar-logo {
+    width: 50px;
+    height: 50px;
+    object-fit: contain;
+    border-radius: 50%;
+    background: #809e00;
+    padding: 3px;
+}
+
+.navbar-brand-name {
+    font-family: 'Nunito', sans-serif;
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--main-yellow);
+    letter-spacing: 0.03em;
+}
+
+.back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 20px;
+    background-color: var(--main-yellow);
+    color: var(--dark-green);
+    border-radius: 30px;
+    font-size: 14px;
+    font-weight: 700;
+    font-family: 'Nunito', sans-serif;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+    .back-btn:hover {
+        background-color: #e6c200;
+        color: var(--dark-green);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+/* ── Hero ────────────────────────────────── */
+.menu-hero {
+    position: relative;
+    height: 240px;
+    background: linear-gradient(135deg, var(--dark-green) 0%, #004d00 60%, #002800 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+    .menu-hero::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background-image: repeating-linear-gradient( 45deg, transparent, transparent 30px, rgba(255, 215, 0, 0.04) 30px, rgba(255, 215, 0, 0.04) 60px );
+    }
+
+.menu-hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.25);
+}
+
+.menu-hero-content {
+    position: relative;
+    text-align: center;
+    color: #fff;
+    z-index: 1;
+}
+
+    .menu-hero-content h1 {
+        font-size: 54px;
+        font-weight: 900;
+        color: var(--main-yellow);
+        letter-spacing: 0.08em;
+        text-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
+        margin: 0;
+    }
+
+    .menu-hero-content p {
+        font-size: 17px;
+        color: rgba(255, 255, 255, 0.85);
+        margin-top: 8px;
+        font-style: italic;
+    }
+
+/* ── Main ────────────────────────────────── */
+.menu-main {
+    background: #fff;
+    min-height: 60vh;
+    padding-bottom: 60px;
+}
+
+.menu-container {
+    max-width: 1140px;
+    margin: 0 auto;
+    padding: 40px 20px 0;
+}
+
+/* ── Toolbar ─────────────────────────────── */
+.menu-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-bottom: 36px;
+}
+
+.search-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--bg-card);
+    border: 2px solid transparent;
+    border-radius: 30px;
+    padding: 10px 20px;
+    flex: 1;
+    max-width: 400px;
+    transition: border-color 0.3s;
+}
+
+    .search-box:focus-within {
+        border-color: var(--dark-green);
+        background: #fff;
+    }
+
+    .search-box i {
+        color: var(--dark-green);
+        font-size: 15px;
+        flex-shrink: 0;
+    }
+
+    .search-box input {
+        border: none;
+        outline: none;
+        background: transparent;
+        font-size: 15px;
+        font-family: 'Open Sans', sans-serif;
+        width: 100%;
+        color: var(--text-dark);
+    }
+
+        .search-box input::placeholder {
+            color: #aaa;
+        }
+
+.menu-count-label {
+    font-size: 14px;
+    color: var(--text-muted);
+    white-space: nowrap;
+    font-weight: 600;
+}
+
+    .menu-count-label span {
+        color: var(--dark-green);
+        font-weight: 800;
+        font-size: 16px;
+    }
+
+/* ── States ──────────────────────────────── */
+.loading-state,
+.error-state,
+.empty-state {
+    text-align: center;
+    padding: 80px 20px;
+    color: var(--text-muted);
+}
+
+    .loading-state p,
+    .error-state p,
+    .empty-state p {
+        margin-top: 20px;
+        font-size: 16px;
+    }
+
+    .error-state i,
+    .empty-state i {
+        font-size: 52px;
+        color: #ccc;
+    }
+
+/* Custom spinner matching theme */
+.spinner-border-custom {
+    display: inline-block;
+    width: 52px;
+    height: 52px;
+    border: 5px solid rgba(0, 100, 0, 0.15);
+    border-top-color: var(--dark-green);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.retry-btn {
+    margin-top: 16px;
+    padding: 10px 28px;
+    background: var(--dark-green);
+    color: var(--main-yellow);
+    border: none;
+    border-radius: 30px;
+    font-size: 15px;
+    font-weight: 700;
+    font-family: 'Nunito', sans-serif;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+    .retry-btn:hover {
+        background: var(--green-hover);
+    }
+
+/* ── Menu Grid ───────────────────────────── */
+.menu-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+}
+
+/* ── Food Card ───────────────────────────── */
+.food-card {
+    background: var(--bg-card);
+    border-radius: var(--radius);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+    animation: fadeInUp 0.4s ease both;
+}
+
+    .food-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 12px 32px rgba(0, 100, 0, 0.15);
+    }
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.card-img-wrap {
+    position: relative;
+    overflow: hidden;
+    height: 180px;
+}
+
+    .card-img-wrap img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: var(--radius) var(--radius) 0 0;
+        transition: transform 0.4s ease;
+    }
+
+.food-card:hover .card-img-wrap img {
+    transform: scale(1.07);
+}
+
+.card-img-placeholder {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #c8e6c9, #a5d6a7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius) var(--radius) 0 0;
+}
+
+    .card-img-placeholder i {
+        font-size: 40px;
+        color: var(--dark-green);
+        opacity: 0.5;
+    }
+
+.card-body {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: 6px;
+}
+
+.card-name {
+    font-family: 'Nunito', sans-serif;
+    font-size: 15px;
+    font-weight: 800;
+    color: var(--dark-green);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    line-height: 1.3;
+    margin: 0;
+}
+
+.card-price {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--dark-green);
+    margin: 0;
+}
+
+.card-desc {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.5;
+    flex: 1;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin: 0;
+}
+
+.card-footer-btn {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 6px 20px;
+    background-color: var(--dark-green);
+    color: var(--main-yellow);
+    border-radius: 30px;
+    font-size: 13px;
+    font-weight: 700;
+    font-family: 'Nunito', sans-serif;
+    text-align: center;
+    text-decoration: none;
+    transition: background 0.3s;
+    border: none;
+    cursor: pointer;
+    width: fit-content;
+    align-self: center;
+}
+
+    .card-footer-btn:hover {
+        background-color: var(--green-hover);
+        color: var(--main-yellow);
+    }
+
+/* ── Modal ───────────────────────────────── */
+.food-modal-content {
+    border: none;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.modal-close-btn {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    z-index: 10;
+    background: rgba(0, 0, 0, 0.55);
+    border: none;
+    color: #fff;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.25s;
+}
+
+    .modal-close-btn:hover {
+        background: rgba(0, 0, 0, 0.8);
+    }
+
+.modal-body-custom {
+    display: flex;
+    flex-direction: row;
+    min-height: 360px;
+}
+
+.modal-img-wrap {
+    position: relative;
+    width: 45%;
+    flex-shrink: 0;
+    overflow: hidden;
+}
+
+    .modal-img-wrap img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+.modal-img-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to right, transparent 60%, rgba(255,255,255,0.08));
+}
+
+.modal-info {
+    flex: 1;
+    padding: 36px 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    background: #fff;
+}
+
+    .modal-info h2 {
+        font-size: 26px;
+        font-weight: 900;
+        color: var(--dark-green);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        line-height: 1.2;
+        margin: 0;
+    }
+
+.modal-price-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--main-yellow);
+    color: var(--dark-green);
+    padding: 6px 16px;
+    border-radius: 30px;
+    font-weight: 800;
+    font-size: 18px;
+    font-family: 'Nunito', sans-serif;
+    width: fit-content;
+}
+
+    .modal-price-badge i {
+        font-size: 14px;
+    }
+
+.modal-desc {
+    font-size: 15px;
+    color: var(--text-muted);
+    line-height: 1.7;
+    flex: 1;
+    margin: 0;
+}
+
+.modal-actions {
+    margin-top: auto;
+}
+
+.modal-order-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 32px;
+    background: var(--dark-green);
+    color: var(--main-yellow);
+    border-radius: 30px;
+    font-size: 15px;
+    font-weight: 700;
+    font-family: 'Nunito', sans-serif;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+    .modal-order-btn:hover {
+        background: var(--green-hover);
+        color: var(--main-yellow);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 100, 0, 0.3);
+    }
+
+/* ── Footer ──────────────────────────────── */
+.menu-footer {
+    background: var(--dark-green);
+    color: var(--main-yellow);
+    text-align: center;
+    padding: 20px;
+    font-size: 14px;
+    font-weight: 300;
+}
+
+/* ── View More btn in BDrestaurant.html ──── */
+.view-more-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 38px;
+    background-color: var(--dark-green);
+    color: var(--main-yellow);
+    border-radius: 30px;
+    font-size: 16px;
+    font-weight: 700;
+    font-family: 'Nunito', sans-serif;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border: 2px solid var(--dark-green);
+}
+
+    .view-more-btn:hover {
+        background-color: transparent;
+        color: var(--dark-green);
+        border-color: var(--dark-green);
+    }
+
+/* ── Responsive ──────────────────────────── */
+@media (max-width: 992px) {
+    .menu-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .menu-hero-content h1 {
+        font-size: 38px;
+    }
+
+    .menu-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+    }
+
+    .modal-body-custom {
+        flex-direction: column;
+    }
+
+    .modal-img-wrap {
+        width: 100%;
+        height: 220px;
+    }
+
+    .modal-info {
+        padding: 24px 20px;
+    }
+
+    .menu-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .search-box {
+        max-width: 100%;
+    }
+
+    .navbar-brand-name {
+        font-size: 18px;
+    }
+}
+
+@media (max-width: 480px) {
+    .menu-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .menu-hero {
+        height: 180px;
+    }
+
+    .menu-hero-content h1 {
+        font-size: 30px;
+    }
+}

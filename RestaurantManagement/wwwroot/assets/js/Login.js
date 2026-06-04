@@ -6,7 +6,22 @@ const spinner = document.getElementById('spinner');
 const btnText = document.getElementById('btnText');
 
 // API endpoint configuration (ASP.NET Core backend)
-const API_URL = 'https://localhost:7037/api/auth/login'; // Change to your backend URL if needed
+const API_URL = 'https://localhost:7037/api/auth/login';
+
+// Helper function to decode JWT token
+function parseJwt(token) {
+    try {
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(atob(base64).split('').map(function (c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+        return JSON.parse(jsonPayload);
+    } catch (e) {
+        console.error('JWT decode error:', e);
+        return null;
+    }
+}
 
 loginForm.addEventListener('submit', async function (e) {
     e.preventDefault();
@@ -54,27 +69,75 @@ loginForm.addEventListener('submit', async function (e) {
 
         if (response.ok) {
             // Login successful
-            successMessage.textContent = '✓ Login successful! Redirecting...';
-            successMessage.style.display = 'block';
+            console.log('Login Response:', result);
 
-            // Save token if available
+            // Save token
             if (result.token) {
                 localStorage.setItem('authToken', result.token);
+
+                // Decode token to get role - CÁCH 1: Dùng hàm parseJwt
+                const decodedToken = parseJwt(result.token);
+                console.log('Decoded token:', decodedToken);
+
+                // Tìm role trong token - có thể ở nhiều key khác nhau
+                let role = null;
+                if (decodedToken) {
+                    // Thử các key có thể có
+                    role = decodedToken['http://schemas.microsoft.com/ws/2008/06/identity/claims/role']
+                        || decodedToken['role']
+                        || decodedToken['Role']
+                        || decodedToken['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/role'];
+                }
+
+                // CÁCH 2: Nếu API trả về role trực tiếp (ưu tiên hơn)
+                if (result.role) {
+                    role = result.role;
+                    console.log('Role from response:', role);
+                }
+
+                console.log('Final role detected:', role);
+                localStorage.setItem('userRole', role);
+
+                // Lấy username từ token hoặc response
+                let userName = username;
+                if (decodedToken) {
+                    userName = decodedToken['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name']
+                        || decodedToken['unique_name']
+                        || decodedToken['name']
+                        || username;
+                }
+                localStorage.setItem('adminName', userName);
+                localStorage.setItem('currentUser', userName);
+
+                // Show success message
+                successMessage.textContent = '✓ Login successful! Redirecting...';
+                successMessage.style.display = 'block';
+
+                // Redirect based on role
+                if (role === 'Admin') {
+                    console.log('Redirecting to admin-dashboard.html');
+                    setTimeout(() => {
+                        window.location.href = 'admin-dashboard.html';
+                    }, 1000);
+                } else if (role === 'Chef') {
+                    console.log('Redirecting to chef-orders.html');
+                    setTimeout(() => {
+                        window.location.href = 'chef-orders.html';
+                    }, 1000);
+                } else {
+                    console.log('Redirecting to BDrestaurant.html (Customer)');
+                    setTimeout(() => {
+                        window.location.href = 'BDrestaurant.html';
+                    }, 1000);
+                }
+            } else {
+                console.error('No token in response');
+                errorMessage.textContent = 'No token received from server!';
+                errorMessage.style.display = 'block';
+                setTimeout(() => {
+                    window.location.href = 'BDrestaurant.html';
+                }, 1000);
             }
-
-            // Save user info if available
-            if (result.user) {
-                localStorage.setItem('currentUser', JSON.stringify(result.user));
-            }
-
-            // Debug output
-            console.log('Login Request:', loginData);
-            console.log('Server Response:', result);
-
-            // Redirect after 1 second
-            setTimeout(() => {
-                window.location.href = 'BDrestaurant.html';
-            }, 1000);
         } else {
             // Login failed
             errorMessage.textContent = result.message || 'Incorrect username or password!';

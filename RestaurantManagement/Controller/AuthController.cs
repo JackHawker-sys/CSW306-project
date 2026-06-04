@@ -33,7 +33,7 @@ namespace RestaurantManagement.Controller
             var user = await _context.Users
                 .AsNoTracking()
                 .FirstOrDefaultAsync(u => u.Username == request.Username);
-            var checkPassword = user !=null && BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash);
+            var checkPassword = user != null && BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash);
 
             if (user == null || !checkPassword)
                 return Unauthorized(new { message = "Invalid username or password!" });
@@ -48,7 +48,15 @@ namespace RestaurantManagement.Controller
                 return Unauthorized(new { message = "User has been locked!" });
 
             var token = GenerateJwtToken(user);
-            return Ok(new {message="Login successfully!",token =$"{token}"});
+
+            // Trả về cả role để frontend dễ xử lý
+            return Ok(new
+            {
+                message = "Login successfully!",
+                token = token,
+                role = user.Role,
+                username = user.Username
+            });
         }
 
         // Send activecode to email
@@ -74,12 +82,12 @@ namespace RestaurantManagement.Controller
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, user.Username),
-                new Claim(ClaimTypes.Role,user.Role),
+                new Claim(ClaimTypes.Role, user.Role),
                 new Claim("UserId", user.UserId.ToString()),
                 new Claim("IsActive", (user.IsActive && user.IsDeleted == false) ? "True" : "False"),
             };
 
-            var isAdmin = (user.Role=="Admin");
+            var isAdmin = (user.Role == "Admin");
             claims.Add(new Claim("CanWatchDashboard", isAdmin.ToString()));
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtSettings:SecretKey"]));
@@ -96,5 +104,4 @@ namespace RestaurantManagement.Controller
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
     }
-
 }

@@ -136,7 +136,7 @@ namespace RestaurantManagement.Controllers
         [Authorize]
         public async Task<IActionResult> Create()
         {
-            var UserId = int.Parse(User.FindFirstValue("UserId")); // sẽ chạy được khi có Authentication
+            var UserId = int.Parse(User.FindFirstValue("UserId"));
 
             var user = await _context.Users
                 .FirstOrDefaultAsync(u => u.UserId == UserId
@@ -145,17 +145,8 @@ namespace RestaurantManagement.Controllers
             if (user == null)
                 return NotFound(new { message = "User Not Found." });
 
-            // 1 user chỉ có 1 order active tại 1 thời điểm
-            var exist = await _context.Orders
-                .FirstOrDefaultAsync(o => o.UserId == UserId
-                                       && !o.IsFinished
-                                       && !o.IsDeleted);
-            if (exist != null)
-                return BadRequest(new
-                {
-                    message = "You already have an unfinished order.",
-                    orderId = exist.OrderId
-                });
+            // KHÔNG còn kiểm tra order active tồn tại nữa
+            // Cho phép tạo nhiều order
 
             var order = new Order
             {
@@ -172,22 +163,23 @@ namespace RestaurantManagement.Controllers
 
             return CreatedAtAction(nameof(GetById), new { id = order.OrderId }, new
             {
-                message = "Order create Successfully.",
-                orderId = order.OrderId  // trả về để OrderDetail dùng
+                message = "Order created successfully.",
+                orderId = order.OrderId
             });
         }
 
         // PUT api/orders/{id}/status
         // Nhân viên cập nhật PaymentStatus
- 
+
         [HttpPut("{id}/status")]
-        [Authorize(Policy ="AdminOrChef")]
+        [Authorize(Policy = "AdminOrChef")]
         public async Task<IActionResult> UpdateStatus(int id, [FromBody] UpdateOrderStatusDto dto)
         {
+            // Cho phép cả "Cancelled" - viết hoa chữ C
             var allowedStatuses = new[]
             {
-                "Unpaid",  "Paid" , "Suspended"
-            };
+        "Unpaid", "Paid", "Suspended", "Cancelled"
+    };
 
             if (!allowedStatuses.Contains(dto.PaymentStatus))
                 return BadRequest(new { message = "Invalid payment status!" });
@@ -199,7 +191,7 @@ namespace RestaurantManagement.Controllers
             if (order == null)
                 return NotFound(new { message = "Order not found." });
 
-            if (order.IsFinished)
+            if (order.IsFinished && dto.PaymentStatus != "Cancelled")
                 return BadRequest(new { message = "Order is completed." });
 
             // Chỉ cho phép trả tiền khi tất cả món đã xong (completed)
@@ -214,6 +206,12 @@ namespace RestaurantManagement.Controllers
                 order.IsFinished = true;
             }
 
+            // Nếu cancel thì không cần kiểm tra
+            if (dto.PaymentStatus == "Cancelled")
+            {
+                order.IsFinished = true;
+            }
+
             order.PaymentStatus = dto.PaymentStatus;
             await _context.SaveChangesAsync();
 
@@ -224,6 +222,71 @@ namespace RestaurantManagement.Controllers
                 paymentStatus = order.PaymentStatus,
                 isFinished = order.IsFinished
             });
+        }
+
+        // PUT api/orders/{id}/confirm
+        // Admin xác nhận order hoàn thành và chuyển sang Paid
+        [HttpPut("{id}/confirm")]
+        [Authorize(Policy = "Admin")]
+        public async Task<IActionResult> ConfirmOrder(int id)
+        {
+            var order = await _context.Orders
+                .Include(o => o.OrderDetails.Where(od => !od.IsDeleted))
+                .FirstOrDefaultAsync(o => o.OrderId == id && !o.IsDeleted);
+
+            if (order == null)
+                return NotFound(new { message = "Order not found." });
+
+            if (order.IsFinished)
+                return BadRequest(new { message = "Order is already completed." });
+
+            // Kiểm tra tất cả các món đã ở trạng thái Ready chưa
+            var allReady = order.OrderDetails.All(d => d.Status == "Ready");
+
+            if (!allReady)
+            {
+                var notReadyItems = order.OrderDetails.Where(d => d.Status != "Ready").Select(d => d.OrderDetailId);
+                return BadRequest(new
+                {
+                    message = "Cannot confirm order. Some items are not ready.",
+                    pendingItems = notReadyItems
+                });
+            }
+
+            // Chuyển tất cả order details từ Ready sang Completed
+            foreach (var detail in order.OrderDetails)
+            {
+                if (detail.Status == "Ready")
+                {
+                    detail.Status = "Completed";
+                    _context.OrderLogs.Add(BuildLog(detail.OrderDetailId, "Completed (by Admin)"));
+                }
+            }
+
+            // Cập nhật order
+            order.PaymentStatus = "Paid";
+            order.IsFinished = true;
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new
+            {
+                message = $"Order #{id} has been confirmed and paid.",
+                orderId = order.OrderId,
+                paymentStatus = order.PaymentStatus,
+                isFinished = order.IsFinished
+            });
+        }
+
+        // Helper method để tạo log
+        private OrderLog BuildLog(int orderDetailId, string status)
+        {
+            return new OrderLog
+            {
+                OrderDetailId = orderDetailId,
+                Status = status,
+                CreatedDate = DateTime.Now
+            };
         }
 
         // Soft delete — chỉ xóa được khi tất cả món còn Pending

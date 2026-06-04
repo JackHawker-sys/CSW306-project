@@ -1,0 +1,701 @@
+﻿* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --main-yellow: #FFD700;
+    --dark-green: #006400;
+    --green-hover: #004d00;
+    --urgent-red: #dc3545;
+    --warning-yellow: #ffc107;
+    --normal-green: #28a745;
+}
+
+body {
+    font-family: 'Open Sans', sans-serif;
+    background-color: #f0f2f5;
+}
+
+h1, h2, h3 {
+    font-family: 'Nunito', sans-serif;
+}
+
+/* Navbar */
+.chef-navbar {
+    background-color: var(--dark-green);
+    border-bottom: 4px solid var(--main-yellow);
+    padding: 15px 20px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.navbar-inner {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.navbar-brand-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+}
+
+.navbar-logo {
+    width: 50px;
+    height: 50px;
+    object-fit: contain;
+    border-radius: 50%;
+    background: #809e00;
+    padding: 3px;
+}
+
+.navbar-brand-name {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--main-yellow);
+}
+
+.chef-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    color: var(--main-yellow);
+}
+
+    .chef-info i {
+        font-size: 24px;
+    }
+
+.logout-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 20px;
+    background-color: #dc3545;
+    color: white;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+    .logout-btn:hover {
+        background-color: #c82333;
+    }
+
+/* Main Container */
+.chef-container {
+    max-width: 1400px;
+    margin: 30px auto;
+    padding: 0 20px;
+}
+
+.chef-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+    .chef-header h1 {
+        color: var(--dark-green);
+        font-size: 28px;
+    }
+
+.refresh-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 24px;
+    background-color: #17a2b8;
+    color: white;
+    border: none;
+    border-radius: 30px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+    .refresh-btn:hover {
+        background-color: #138496;
+    }
+
+/* Legend */
+.legend {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+    padding: 10px 15px;
+    background: white;
+    border-radius: 10px;
+    flex-wrap: wrap;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+}
+
+.legend-color {
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+}
+
+    .legend-color.urgent {
+        background: var(--urgent-red);
+    }
+
+    .legend-color.warning {
+        background: var(--warning-yellow);
+    }
+
+    .legend-color.normal {
+        background: var(--normal-green);
+    }
+
+/* Auto refresh */
+.auto-refresh {
+    font-size: 13px;
+    color: #666;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+    .auto-refresh i {
+        color: var(--dark-green);
+    }
+
+/* Filter Tabs */
+.filter-tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 25px;
+    flex-wrap: wrap;
+}
+
+.filter-btn {
+    padding: 10px 24px;
+    border: none;
+    border-radius: 30px;
+    background-color: #e9ecef;
+    color: #495057;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+    .filter-btn.active {
+        background-color: var(--dark-green);
+        color: var(--main-yellow);
+    }
+
+    .filter-btn:hover:not(.active) {
+        background-color: #dee2e6;
+    }
+
+/* Orders Grid */
+.orders-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    gap: 24px;
+}
+
+/* Order Card */
+.order-card {
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s, box-shadow 0.3s;
+    animation: fadeInUp 0.4s ease both;
+}
+
+    .order-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Priority colors */
+.order-card.urgent {
+    border-left: 5px solid var(--urgent-red);
+    background: linear-gradient(135deg, #fff 0%, #fff5f5 100%);
+}
+
+.order-card.warning {
+    border-left: 5px solid var(--warning-yellow);
+    background: linear-gradient(135deg, #fff 0%, #fffef5 100%);
+}
+
+.order-card.normal {
+    border-left: 5px solid var(--normal-green);
+}
+
+.order-card-header {
+    padding: 15px 20px;
+    background: var(--dark-green);
+    color: var(--main-yellow);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.order-id {
+    font-size: 18px;
+    font-weight: 800;
+}
+
+.waiting-time {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 12px;
+    border-radius: 30px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+    .waiting-time.urgent {
+        background: var(--urgent-red);
+        color: white;
+    }
+
+    .waiting-time.warning {
+        background: var(--warning-yellow);
+        color: #333;
+    }
+
+    .waiting-time.normal {
+        background: var(--normal-green);
+        color: white;
+    }
+
+.order-card-body {
+    padding: 15px 20px;
+}
+
+.customer-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+    .customer-info i {
+        font-size: 18px;
+        color: var(--dark-green);
+    }
+
+.order-time {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 15px;
+    font-size: 14px;
+    color: #666;
+}
+
+.items-list {
+    max-height: 300px;
+    overflow-y: auto;
+    margin: 15px 0;
+}
+
+/* Order Item */
+.order-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px dashed #eee;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.item-name {
+    font-weight: 600;
+    color: var(--dark-green);
+    flex: 2;
+    min-width: 100px;
+}
+
+.item-quantity {
+    background: var(--main-yellow);
+    color: var(--dark-green);
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 13px;
+    min-width: 50px;
+    text-align: center;
+}
+
+.item-status {
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    min-width: 85px;
+    text-align: center;
+}
+
+    .item-status.Pending {
+        background: #ffc107;
+        color: #333;
+    }
+
+    .item-status.Processing {
+        background: #17a2b8;
+        color: white;
+    }
+
+    .item-status.Completed {
+        background: #28a745;
+        color: white;
+    }
+
+/* Small action buttons inside item */
+.action-btn-small {
+    padding: 4px 10px;
+    border: none;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-left: 5px;
+}
+
+.btn-processing-small {
+    background: #17a2b8;
+    color: white;
+}
+
+    .btn-processing-small:hover {
+        background: #138496;
+    }
+
+.btn-complete-small {
+    background: var(--dark-green);
+    color: var(--main-yellow);
+}
+
+    .btn-complete-small:hover {
+        background: var(--green-hover);
+    }
+
+/* Order Card Footer */
+.order-card-footer {
+    padding: 15px 20px;
+    background: #f8f9fa;
+    display: flex;
+    gap: 10px;
+}
+
+.action-btn {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 30px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-processing {
+    background: #17a2b8;
+    color: white;
+}
+
+    .btn-processing:hover {
+        background: #138496;
+    }
+
+.btn-complete {
+    background: var(--dark-green);
+    color: var(--main-yellow);
+}
+
+    .btn-complete:hover {
+        background: var(--green-hover);
+    }
+
+/* Modal */
+.modal-custom {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+}
+
+    .modal-custom.show {
+        display: flex;
+    }
+
+.modal-content-custom {
+    background: white;
+    border-radius: 15px;
+    max-width: 400px;
+    width: 90%;
+    padding: 25px;
+    text-align: center;
+}
+
+    .modal-content-custom h3 {
+        color: var(--dark-green);
+        margin-bottom: 15px;
+    }
+
+.modal-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.btn-confirm {
+    padding: 10px 25px;
+    background: var(--dark-green);
+    color: var(--main-yellow);
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+    .btn-confirm:hover {
+        background: var(--green-hover);
+    }
+
+.btn-cancel {
+    padding: 10px 25px;
+    background: #6c757d;
+    color: white;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+    .btn-cancel:hover {
+        background: #5a6268;
+    }
+
+/* Loading & Empty States */
+.loading-state, .empty-state {
+    text-align: center;
+    padding: 80px 20px;
+    color: #666;
+}
+
+    .empty-state i {
+        margin-bottom: 15px;
+    }
+
+.spinner-custom {
+    width: 50px;
+    height: 50px;
+    border: 4px solid #ccc;
+    border-top-color: var(--dark-green);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 15px;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Toast Message */
+.toast-message {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: var(--dark-green);
+    color: var(--main-yellow);
+    padding: 12px 24px;
+    border-radius: 30px;
+    z-index: 1100;
+    animation: fadeOut 3s forwards;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    font-weight: 500;
+}
+
+    .toast-message.error {
+        background: #dc3545;
+        color: white;
+    }
+
+@keyframes fadeOut {
+    0% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    70% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateX(20px);
+        display: none;
+    }
+}
+
+/* Scrollbar */
+.items-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.items-list::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.items-list::-webkit-scrollbar-thumb {
+    background: var(--dark-green);
+    border-radius: 10px;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+    .orders-grid {
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .orders-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .navbar-inner {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .chef-header {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .legend {
+        justify-content: center;
+    }
+
+    .filter-tabs {
+        justify-content: center;
+    }
+
+    .order-card-header {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .customer-info {
+        justify-content: center;
+    }
+
+    .order-time {
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .chef-container {
+        padding: 0 15px;
+    }
+
+    .chef-header h1 {
+        font-size: 22px;
+    }
+
+    .order-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .item-name {
+        width: 100%;
+    }
+
+    .action-btn-small {
+        align-self: flex-end;
+    }
+}
+
+/* chef-orders.css - Thêm vào cuối file */
+
+/* Ready button style */
+.btn-ready-small {
+    background: #28a745;
+    color: white;
+}
+
+    .btn-ready-small:hover {
+        background: #218838;
+    }
+
+/* Ready status badge */
+.item-status.Ready {
+    background: #17a2b8;
+    color: white;
+}
+
+.ready-badge {
+    background: #17a2b8;
+    color: white;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    display: inline-block;
+}
+
+/* Order card khi có món Ready */
+.order-card .item-status.Ready {
+    background: #17a2b8;
+    color: white;
+}
+
+

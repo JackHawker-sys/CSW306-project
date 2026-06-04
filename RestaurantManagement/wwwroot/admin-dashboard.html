@@ -1,0 +1,189 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BD Restaurant - Admin Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@200..1000&family=Open+Sans:wght@300..800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./assets/css/admin-dashboard.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <img src="./assets/images/logo.png" alt="Logo" class="sidebar-logo">
+                <h2>BD Restaurant</h2>
+                <p>Admin Panel</p>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active" data-page="orders">
+                    <i class="fa-solid fa-receipt"></i>
+                    <span>Order Details</span>
+                </a>
+                <a href="#" class="nav-item" data-page="employees">
+                    <i class="fa-solid fa-users"></i>
+                    <span>Employees</span>
+                </a>
+                <a href="#" class="nav-item" data-page="revenue">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <span>Revenue</span>
+                </a>
+                <a href="#" class="nav-item" id="logoutNav">
+                    <i class="fa-solid fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="main-header">
+                <button class="toggle-sidebar" id="toggleSidebar">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <div class="admin-info">
+                    <span id="adminName">Admin</span>
+                    <i class="fa-solid fa-user-circle"></i>
+                </div>
+            </div>
+
+            <!-- Orders Page -->
+            <div id="ordersPage" class="page-content active">
+                <div class="page-header">
+                    <h1><i class="fa-solid fa-receipt"></i> Order Details</h1>
+                    <button id="refreshOrdersBtn" class="refresh-btn">
+                        <i class="fa-solid fa-refresh"></i> Refresh
+                    </button>
+                </div>
+
+                <!-- Filter Tabs -->
+                <div class="filter-tabs">
+                    <button class="filter-btn active" data-order-filter="processing">Processing Orders</button>
+                    <button class="filter-btn" data-order-filter="completed">Completed Orders</button>
+                    <button class="filter-btn" data-order-filter="cancelled">Cancelled Orders</button>
+                    <button class="filter-btn" data-order-filter="all">All Orders</button>
+                </div>
+
+                <!-- Orders Table -->
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Customer</th>
+                                <th>Order Date</th>
+                                <th>Items</th>
+                                <th>Total Amount</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ordersTableBody">
+                            <tr><td colspan="7" class="loading-cell"><div class="spinner"></div> Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Employees Page -->
+            <div id="employeesPage" class="page-content">
+                <div class="page-header">
+                    <h1><i class="fa-solid fa-users"></i> Employees (Chefs)</h1>
+                    <button id="refreshEmployeesBtn" class="refresh-btn">
+                        <i class="fa-solid fa-refresh"></i> Refresh
+                    </button>
+                </div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Employee ID</th>
+                                <th>Full Name</th>
+                                <th>Phone</th>
+                                <th>Email</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="employeesTableBody">
+                            <tr><td colspan="5" class="loading-cell"><div class="spinner"></div> Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Revenue Page -->
+            <div id="revenuePage" class="page-content">
+                <div class="page-header">
+                    <h1><i class="fa-solid fa-chart-line"></i> Revenue Report</h1>
+                    <button id="refreshRevenueBtn" class="refresh-btn">
+                        <i class="fa-solid fa-refresh"></i> Refresh
+                    </button>
+                </div>
+
+                <!-- Revenue Stats Cards -->
+                <div class="revenue-stats">
+                    <div class="stat-card">
+                        <i class="fa-solid fa-dollar-sign"></i>
+                        <div>
+                            <h3 id="totalRevenue">₫0</h3>
+                            <p>Total Revenue</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fa-solid fa-check-circle"></i>
+                        <div>
+                            <h3 id="completedOrdersCount">0</h3>
+                            <p>Completed Orders</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fa-solid fa-clock"></i>
+                        <div>
+                            <h3 id="processingOrdersCount">0</h3>
+                            <p>Processing Orders</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Revenue Table -->
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Customer</th>
+                                <th>Order Date</th>
+                                <th>Completed Date</th>
+                                <th>Total Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody id="revenueTableBody">
+                            <tr><td colspan="5" class="loading-cell"><div class="spinner"></div> Loading...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Confirm Modal -->
+    <div id="confirmModal" class="modal-custom">
+        <div class="modal-content-custom">
+            <h3>Confirm Action</h3>
+            <p id="confirmMessage">Are you sure?</p>
+            <div class="modal-buttons">
+                <button id="confirmYes" class="btn-confirm-yes">Yes</button>
+                <button id="confirmNo" class="btn-confirm-no">No</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="./assets/js/admin-dashboard.js"></script>
+</body>
+</html>

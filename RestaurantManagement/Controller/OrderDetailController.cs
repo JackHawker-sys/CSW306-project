@@ -21,7 +21,8 @@ namespace RestaurantManagement.Controller
         private static readonly Dictionary<string, string[]> AllowedTransitions = new()
         {
             { "Pending",    new[] { "Processing", "Cancelled" } },
-            { "Processing", new[] { "Completed" } },
+            { "Processing", new[] { "Ready" } },      // Chef chỉ có thể chuyển sang Ready, không phải Completed
+            { "Ready",      new[] { "Completed", "Cancelled" } },  // Admin mới có thể chuyển sang Completed
             { "Completed",  Array.Empty<string>() },   // terminal state
             { "Cancelled",  Array.Empty<string>() }    // terminal state
         };
@@ -158,7 +159,21 @@ namespace RestaurantManagement.Controller
             if (detail == null)
                 return NotFound(new { message = "Order detail not found." });
 
-            // Kiểm tra xem chuyển sang trạng thái được nhập 
+            // Kiểm tra quyền: Chef không thể chuyển sang Completed
+            var userRole = User.FindFirst(ClaimTypes.Role)?.Value;
+
+            if (userRole == "Chef" && dto.Status == "Completed")
+            {
+                return BadRequest(new { message = "Chef cannot mark as Completed. Only Admin can confirm completion." });
+            }
+
+            // Chef chỉ có thể chuyển Pending -> Processing, hoặc Processing -> Ready
+            if (userRole == "Chef" && dto.Status == "Ready" && detail.Status != "Processing")
+            {
+                return BadRequest(new { message = "Can only mark as Ready when status is Processing." });
+            }
+
+            // Kiểm tra chuyển đổi hợp lệ
             if (!AllowedTransitions.TryGetValue(detail.Status, out var allowed) ||
                 !allowed.Contains(dto.Status))
             {
@@ -183,11 +198,11 @@ namespace RestaurantManagement.Controller
                 message = $"Status updated to '{dto.Status}'.",
                 detail.OrderDetailId,
                 detail.Status,
-                allowedNextSteps = AllowedTransitions[dto.Status]
+                allowedNextSteps = AllowedTransitions.GetValueOrDefault(dto.Status, Array.Empty<string>())
             });
         }
 
-       // PATCH: quantity
+        // PATCH: quantity
         [HttpPatch("{id}/quantity")]
         public async Task<IActionResult> UpdateQuantity(int id, [FromBody] UpdateQuantityDto dto)
         {
@@ -265,8 +280,6 @@ namespace RestaurantManagement.Controller
             var role = User.FindFirstValue(ClaimTypes.Role);
             return role is "Admin" or "Chef";
         }
-
-        
         private async Task<bool> CanAccessOrderAsync(int orderId)
         {
             // Admin/ Chef trả thẳng true
