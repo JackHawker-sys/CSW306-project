@@ -6,7 +6,7 @@ const spinner = document.getElementById('spinner');
 const btnText = document.getElementById('btnText');
 
 // API endpoint configuration (change the URL to match your backend server)
-const API_URL = 'https://localhost:44366/api/user/register'; // Change this URL if needed
+const API_URL = 'https://localhost:7037/api/user/register'; // Change this URL if needed
 
 signupForm.addEventListener('submit', async function (e) {
     e.preventDefault();
@@ -40,6 +40,16 @@ signupForm.addEventListener('submit', async function (e) {
         return;
     }
 
+    // Email validation - only @gmail.com or @eiu.edu.vn
+    const validEmailDomains = ['@gmail.com', '@eiu.edu.vn'];
+    const isValidEmail = validEmailDomains.some(domain => email.endsWith(domain));
+
+    if (!isValidEmail) {
+        errorMessage.textContent = 'Email must be @gmail.com or @eiu.edu.vn!';
+        errorMessage.style.display = 'block';
+        return;
+    }
+
     // Prepare FormData for RegisterDto binding
     const formData = new FormData();
     formData.append('Username', username);
@@ -65,18 +75,18 @@ signupForm.addEventListener('submit', async function (e) {
 
         if (response.ok) {
             // Registration successful
-            successMessage.textContent = '✓ Account created successfully! Redirecting...';
-            successMessage.style.display = 'block';
+            successMessage.style.display = 'none';
             errorMessage.style.display = 'none';
 
             // Debug output
             console.log('Register Data:', { username, fullname, email, phone });
             console.log('Server Response:', result);
+            console.log('Activation Code:', result.activeCode);
 
-            // Redirect after 1.5 seconds
+            // Redirect to activation page after 1 second
             setTimeout(() => {
-                window.location.href = 'login.html';
-            }, 1500);
+                window.location.href = 'activate.html';
+            }, 1000);
         } else {
             // Registration failed
             errorMessage.textContent = result.message || 'Registration failed! Please try again.';

@@ -30,7 +30,7 @@ body {
     padding: 20px;
 }
 
-.signup-container {
+.activate-container {
     background: var(--main-yellow);
     border-radius: 15px;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
@@ -38,14 +38,6 @@ body {
     width: 100%;
     max-width: 500px;
     animation: slideIn 0.6s ease;
-    max-height: 95vh;
-    overflow-y: auto; 
-    scrollbar-width: none; /* Hides scrollbar on Firefox */
-    -ms-overflow-style: none;  /* Hides scrollbar on IE/Edge */
-}
-
-.signup-container::-webkit-scrollbar {
-    display: none;
 }
 
 @keyframes slideIn {
@@ -60,11 +52,11 @@ body {
     }
 }
 
-.signup-header {
+.activate-header {
     text-align: center;
 }
 
-.signup-header .logo {
+.activate-header .logo {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -76,21 +68,21 @@ body {
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
 }
 
-.signup-header img {
+.activate-header img {
     width: 100%;
     height: 100%;
     object-fit: contain;
     border-radius: 50%;
 }
 
-.signup-header h1 {
+.activate-header h1 {
     color: var(--dark-green);
     font-size: 32px;
     font-weight: 700;
     margin-bottom: 10px;
 }
 
-.signup-header p {
+.activate-header p {
     color: #333;
     font-size: 14px;
 }
@@ -129,7 +121,7 @@ body {
     color: #999;
 }
 
-.signup-btn {
+.activate-btn {
     width: 100%;
     padding: 14px;
     background-color: var(--dark-green);
@@ -144,7 +136,7 @@ body {
     margin-top: 15px;
 }
 
-.signup-btn:hover {
+.activate-btn:hover {
     background-color: #004d00;
     transform: translateY(-2px);
     box-shadow: 0 5px 20px rgba(0, 100, 0, 0.4);
@@ -152,11 +144,11 @@ body {
     text-decoration: none;
 }
 
-.signup-btn:active {
+.activate-btn:active {
     transform: translateY(0);
 }
 
-.signup-btn:disabled {
+.activate-btn:disabled {
     background-color: #999;
     cursor: not-allowed;
     opacity: 0.7;
@@ -203,52 +195,6 @@ body {
 }
 
 .login-link a:hover {
-    color: #004d00;
-    text-decoration: underline;
-}
-
-/* Activation Form Styles */
-.activation-form {
-    animation: slideIn 0.6s ease;
-}
-
-.activation-form .signup-header {
-    margin-bottom: 30px;
-}
-
-.activation-form .signup-header h2 {
-    color: var(--dark-green);
-    font-size: 24px;
-    font-weight: 700;
-    margin-bottom: 10px;
-}
-
-.activation-form .signup-header p {
-    color: #333;
-    font-size: 13px;
-}
-
-.resend-code-link {
-    text-align: center;
-    margin-top: 20px;
-    padding-top: 20px;
-    border-top: 1px solid #ddd;
-}
-
-.resend-code-link p {
-    color: #333;
-    font-size: 14px;
-}
-
-.resend-code-link a {
-    color: var(--dark-green);
-    text-decoration: none;
-    font-weight: 700;
-    transition: all 0.3s ease;
-    cursor: pointer;
-}
-
-.resend-code-link a:hover {
     color: #004d00;
     text-decoration: underline;
 }
