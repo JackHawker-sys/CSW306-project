@@ -83,6 +83,9 @@ namespace RestaurantManagement.Controller
             bool emailExists = _context.Users
                 .Any(x => x.Email == register.Email);
 
+            bool phoneExists = _context.Users
+                .Any(x=> x.Phone == register.Phone);
+
             if (emailExists)
                 return Conflict(new { message = "Email is already existed." });
 
