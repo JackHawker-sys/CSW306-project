@@ -23,12 +23,13 @@
                 <img src="./assets/images/logo.png" alt="BD Restaurant Logo">
             </div>
             <h1>BD Restaurant</h1>
-            <p>Sign in to continue</p>
+            <p id="headerSubtitle">Sign in to continue</p>
         </div>
 
         <div class="error-message" id="errorMessage"></div>
         <div class="success-message" id="successMessage"></div>
 
+        <!-- Login Form -->
         <form id="loginForm">
             <div class="form-group">
                 <label for="username"><i class="fas fa-user"></i> Username</label>
@@ -39,10 +40,33 @@
                 <label for="password"><i class="fas fa-lock"></i> Password</label>
                 <input type="password" id="password" name="password" placeholder="Enter your password" required>
             </div>
+            <div class="password-footer">
+                <button type="button" class="forgot-link" id="forgot-link">
+                    Forgot password?
+                </button>
+            </div>
 
             <button type="submit" class="login-btn" id="loginBtn">
                 <span class="spinner" id="spinner"></span>
                 <span id="btnText">Sign In</span>
+            </button>
+        </form>
+
+        <!-- Forgot Password Email Form (Hidden by default) -->
+        <form id="forgotPasswordEmailForm" style="display: none;">
+            <div class="form-group">
+                <label for="forgotEmail"><i class="fas fa-envelope"></i> Email Address</label>
+                <input type="email" id="forgotEmail" name="email" placeholder="Enter your email address" required>
+                <small class="form-text text-muted">We'll send a verification code to this email</small>
+            </div>
+
+            <button type="submit" class="login-btn" id="sendCodeBtn">
+                <span class="spinner" id="spinnerForgot"></span>
+                <span id="btnTextForgot">Send Verification Code</span>
+            </button>
+
+            <button type="button" class="login-btn back-btn" id="backBtn" style="margin-top: 10px; background-color: #666;">
+                Back to Login
             </button>
         </form>
 

@@ -6,9 +6,11 @@ const spinner = document.getElementById('spinner');
 const btnText = document.getElementById('btnText');
 const emailInput = document.getElementById('email');
 const activationCodeInput = document.getElementById('activationCode');
+const resendBtn = document.getElementById('resendBtn');
 
 // API endpoint configuration
 const ACTIVATE_API_URL = 'https://localhost:7037/api/user/activate';
+const RESEND_VERIFICATION_API_URL = 'https://localhost:7037/api/auth/send-verification';
 
 activateForm.addEventListener('submit', async function (e) {
     e.preventDefault();
@@ -75,5 +77,64 @@ activateForm.addEventListener('submit', async function (e) {
         activateBtn.disabled = false;
         spinner.classList.remove('show');
         btnText.textContent = 'Activate Account';
+    }
+});
+
+// Resend verification code handler
+resendBtn.addEventListener('click', async function (e) {
+    e.preventDefault();
+
+    const email = emailInput.value.trim();
+
+    errorMessage.style.display = 'none';
+    successMessage.style.display = 'none';
+
+    // Validate email input
+    if (!email) {
+        errorMessage.textContent = 'Please enter your email address!';
+        errorMessage.style.display = 'block';
+        return;
+    }
+
+    // Change to loading state
+    resendBtn.disabled = true;
+    const originalText = resendBtn.textContent;
+    resendBtn.textContent = 'Sending...';
+
+    try {
+        // Send resend verification code request
+        const response = await fetch(RESEND_VERIFICATION_API_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(email),
+            credentials: 'include'
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            // Resend successful
+            successMessage.textContent = `✓ ${result.message || 'Verification code resent successfully!'}`;
+            successMessage.style.display = 'block';
+            errorMessage.style.display = 'none';
+
+            console.log('Resend Response:', result);
+        } else {
+            // Resend failed
+            errorMessage.textContent = result.message || 'Failed to resend verification code. Please try again.';
+            errorMessage.style.display = 'block';
+            console.error('Resend failed:', result);
+        }
+    } catch (error) {
+        // Request error
+        errorMessage.textContent = 'Connection error: ' + error.message;
+        errorMessage.style.display = 'block';
+        console.error('API Error:', error);
+    } finally {
+        // Restore button state
+        resendBtn.disabled = false;
+        resendBtn.textContent = originalText;
     }
 });
