@@ -1,571 +1,523 @@
 <!DOCTYPE html>
 <html>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BD - Restaurant</title>
-    <link rel="stylesheet" href="./assets/css/BDrestaurant.css">
-    <link rel="stylesheet" href="./assets/css/menu.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>BD - Restaurant</title>
+        <link rel="stylesheet" href="./assets/css/BDrestaurant.css">
+        <link rel="stylesheet" href="./assets/css/menu.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap"
-          rel="stylesheet">
-    <link rel="stylesheet" href="./assets/css/cart.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-</head>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link
+            href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap"
+            rel="stylesheet">
+        <link rel="stylesheet" href="./assets/css/cart.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    </head>
 
-<body>
-    <a href="#top" id="goTop" class="go-top"><i class="fa-solid fa-angle-up"></i></a>
-    <div class="container">
-        <header>
+    <body>
+        <a href="#top" id="goTop" class="go-top"><i class="fa-solid fa-angle-up"></i></a>
+        <div class="container">
+            <header>
 
-            <section class="slider">
+                <section class="slider">
 
-                <div class="slides">
-                    <div class="overlay"></div>
-
-                    <article class="header-slide">
-                        <img src="./assets/images/slider-1.jpg" alt="slider">
+                    <div class="slides">
                         <div class="overlay"></div>
-                        <a href="#"><img src="./assets/images/logo.png" alt="logo" class="slider-logo"></a>
-                        <div class="slide-content">
 
-                            <h1>Nice Space</h1>
-                            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit</p>
-                            <a href="#" class="btn">Learn More</a>
+                        <article class="header-slide">
+                            <img src="./assets/images/slider-1.jpg" alt="slider">
+                            <div class="overlay"></div>
+                            <a href="#"><img src="./assets/images/logo.png" alt="logo" class="slider-logo"></a>
+                            <div class="slide-content">
+
+                                <h1>Nice Space</h1>
+                                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit</p>
+                                <a href="#" class="btn">Learn More</a>
+                            </div>
+                        </article>
+
+                        <article class="header-slide">
+                            <img src="./assets/images/slider-2.jpg" alt="slider">
+                            <div class="overlay"></div>
+                            <a href="#"><img src="./assets/images/logo.png" alt="logo" class="slider-logo"></a>
+                            <div class="slide-content">
+                                <h1>Comfortable Dining Room</h1>
+                                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit</p>
+                                <a href="#" class="btn">Learn More</a>
+                            </div>
+                        </article>
+
+                        <article class="header-slide">
+                            <img src="./assets/images/slider-3.jpg" alt="slider">
+                            <div class="overlay"></div>
+                            <a href="#"><img src="./assets/images/logo.png" alt="logo" class="slider-logo"></a>
+                            <div class="slide-content">
+                                <h1>Local Fresh Cuisine</h1>
+                                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit</p>
+                                <a href="#" class="btn">Learn More</a>
+                            </div>
+                        </article>
+
+                    </div>
+
+                    <button class="prev">&#10094;</button>
+                    <button class="next">&#10095;</button>
+
+                    <div class="dots"></div>
+                </section>
+            </header>
+
+            <div class="hamburger" id="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <div class="overlay" id="overlay"></div>
+            <button class="close-btn" id="close-btn">X</button>
+
+            <nav class="primary-menu container" id="primary-menu">
+                <ul>
+                    <li><a href="#" class="current">Home</a></li>
+                    <li><a href="#">About</a></li>
+                    <li><a href="#">Menu</a></li>
+                    <li><a href="#">Online Order</a></li>
+                    <li class="page">
+                        <p><span>page</span> <i class="fa-solid fa-chevron-down"></i></p>
+                        <ul>
+                            <li><a href="#">page 1</a></li>
+                            <li><a href="#">page 2</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#">Contact</a></li>
+                </ul>
+            </nav>
+
+            <main>
+                <section class="about-us">
+                    <div class="row section-box">
+                        <div class="col-md-5">
+                            <img src="./assets/images/about-us.jpg" alt="about-us">
                         </div>
-                    </article>
-
-                    <article class="header-slide">
-                        <img src="./assets/images/slider-2.jpg" alt="slider">
-                        <div class="overlay"></div>
-                        <a href="#"><img src="./assets/images/logo.png" alt="logo" class="slider-logo"></a>
-                        <div class="slide-content">
-                            <h1>Comfortable Dining Room</h1>
-                            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit</p>
-                            <a href="#" class="btn">Learn More</a>
-                        </div>
-                    </article>
-
-                    <article class="header-slide">
-                        <img src="./assets/images/slider-3.jpg" alt="slider">
-                        <div class="overlay"></div>
-                        <a href="#"><img src="./assets/images/logo.png" alt="logo" class="slider-logo"></a>
-                        <div class="slide-content">
-                            <h1>Local Fresh Cuisine</h1>
-                            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit</p>
-                            <a href="#" class="btn">Learn More</a>
-                        </div>
-                    </article>
-
-                </div>
-
-                <button class="prev">&#10094;</button>
-                <button class="next">&#10095;</button>
-
-                <div class="dots"></div>
-            </section>
-        </header>
-
-        <div class="hamburger" id="hamburger">
-            <span></span>
-            <span></span>
-            <span></span>
-        </div>
-        <div class="overlay" id="overlay"></div>
-        <button class="close-btn" id="close-btn">X</button>
-
-        <nav class="primary-menu container" id="primary-menu">
-            <ul>
-                <li><a href="#" class="current">Home</a></li>
-                <li><a href="#">About</a></li>
-                <li><a href="#">Menu</a></li>
-                <li><a href="#">Online Order</a></li>
-                <li class="page">
-                    <p><span>page</span> <i class="fa-solid fa-chevron-down"></i></p>
-                    <ul>
-                        <li><a href="#">page 1</a></li>
-                        <li><a href="#">page 2</a></li>
-                    </ul>
-                </li>
-                <li><a href="#">Contact</a></li>
-            </ul>
-        </nav>
-
-        <main>
-            <section class="about-us">
-                <div class="row section-box">
-                    <div class="col-md-5">
-                        <img src="./assets/images/about-us.jpg" alt="about-us">
-                    </div>
-                    <div class="about-intro col-md-7">
-                        <h1 class="section-title">About Us</h1>
-                        <p>
-                            <a href="#"><i class="fa-brands fa-twitter"></i></a>
-                            <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
-                            <a href="#"><i class="fa-brands fa-pinterest"></i></a>
-                            <a href="#"><i class="fa-brands fa-google-plus-g"></i></a>
-                        </p>
-                        <p>
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam convallis quam sed
-                            tincidunt accumsan. Aliquam at tincidunt tortor, ac porta turpis. Curabitur lacinia
-                            venenatis semper.
-                        </p>
-                        <p>
-                            Aliquam ut nibh ut lacus posuere facilisis. Vestibulum ullamcorper arcu et bibendum
-                            ultrices. Suspendisse rutrum turpis vitae.
-                        </p>
-                        <div class="about-box-row row g-4">
-                            <div class="col-12 col-md-6">
-                                <div class="about-box">
-                                    <h2>Our Features</h2>
-                                    <p>
-                                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam dignissim mi
-                                        arcu, ut tristique dui eleifend a. Vivamus ac nulla metus. Vestibulum
-                                        sit amet quam tincidunt.
-                                    </p>
-                                </div>
-                            </div>
-                            <div class="col-12 col-md-6">
-                                <div class="about-box">
-                                    <h2>Our Facilities</h2>
-                                    <p>
-                                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam dignissim mi
-                                        arcu, ut tristique dui eleifend a. Vivamus ac nulla metus. Vestibulum
-                                        sit amet quam tincidunt.
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <article class="reservations col-12 col-md-12">
-                        <h1 class="section-title">Reservations</h1>
-                        <form method="POST">
-                            <div>
-                                <div class="reservation-input">
-                                    <div><input type="text" name="date" id="date" placeholder="Date"></div>
-                                    <div class="input-icon">
-                                        <i class="fa-regular fa-calendar-days"></i>
-                                    </div>
-                                </div>
-                                <div class="error" id="date-error"></div>
-                            </div>
-
-                            <div>
-                                <div class="reservation-input">
-                                    <div>
-                                        <input type="text" name="time" id="time" placeholder="Time">
-                                    </div>
-                                    <div class="input-icon">
-                                        <i class="fa-regular fa-calendar-days"></i>
-                                    </div>
-                                </div>
-                                <div class="error" id="time-error"></div>
-                            </div>
-
-                            <div>
-                                <div class="size-input">
-                                    <div>
-                                        <input type="text" name="party-size" id="party-size"
-                                               placeholder="Party Size">
-                                    </div>
-
-                                    <div class="input-icon" id="size-toggle">
-                                        <i class="fa-solid fa-sort"></i>
-                                    </div>
-
-                                    <ul class="size-list">
-                                        <li>1 Person</li>
-                                        <li>2 People</li>
-                                        <li>3 People</li>
-                                        <li>4 People</li>
-                                        <li>+5 People</li>
-                                    </ul>
-                                </div>
-                                <div class="error" id="party-error"></div>
-                            </div>
-                            <button type="button" id="book-btn">Book Now</button>
-                        </form>
-                    </article>
-                </div>
-            </section>
-
-            <section class="food-menu">
-                <div class="section-box row g-4">
-                    <h1 class="food-menu-heading section-title">Delicious Food Menu</h1>
-                    <div class="col-12 col-md-3">
-                        <article class="food">
-                            <a href="#"><img src="./assets/images/menu-1.jpg" alt="meal"></a>
-                            <h2><a href="#">Lorem ipsum</a></h2>
-                            <p>$20.00 / Person</p>
-                            <p>Lorem ipsum dolor sit amet consectetur adipisicing.</p>
-                            <a href="#" class="order-btn">Order Now</a>
-                        </article>
-                    </div>
-                    <div class="col-12 col-md-3">
-                        <article class="food">
-                            <a href="#"><img src="./assets/images/menu-2.jpg" alt="meal"></a>
-                            <h2><a href="#">Curabitur Commodo</a></h2>
-                            <p>$10.00 / Person</p>
-                            <p>Lorem ipsum dolor sit amet consectetur adipisicing.</p>
-                            <a href="#" class="order-btn">Order Now</a>
-                        </article>
-                    </div>
-
-                    <div class="col-12 col-md-3">
-                        <article class="food">
-                            <a href="#"><img src="./assets/images/menu-3.jpg" alt="meal"></a>
-                            <h2><a href="#">Proin Tortor</a></h2>
-                            <p>$12.00 / Person</p>
-                            <p>Lorem ipsum dolor sit amet consectetur adipisicing.</p>
-                            <a href="#" class="order-btn">Order Now</a>
-                        </article>
-                    </div>
-
-                    <div class="col-12 col-md-3">
-                        <article class="food">
-                            <a href="#"><img src="./assets/images/menu-4.jpg" alt="meal"></a>
-                            <h2><a href="#">Aliquam Erat</a></h2>
-                            <p>$8.00 / Person</p>
-                            <p>Lorem ipsum dolor sit amet consectetur adipisicing.</p>
-                            <a href="#" class="order-btn">Order Now</a>
-                        </article>
-                    </div>
-
-                    <div class="col-12 col-md-3">
-                        <article class="food">
-                            <a href="#"><img src="./assets/images/menu-5.jpg" alt="meal"></a>
-                            <h2><a href="#">Curabitur Arcu Massa</a></h2>
-                            <p>$18.00 / Person</p>
-                            <p>Lorem ipsum dolor sit amet consectetur adipisicing.</p>
-                            <a href="#" class="order-btn">Order Now</a>
-                        </article>
-                    </div>
-
-                    <div class="col-12 col-md-3">
-                        <article class="food">
-                            <a href="#"><img src="./assets/images/menu-6.jpg" alt="meal"></a>
-                            <h2><a href="#">Vestibulum Fringilla</a></h2>
-                            <p>$15.00 / Person</p>
-                            <p>Lorem ipsum dolor sit amet consectetur adipisicing.</p>
-                            <a href="#" class="order-btn">Order Now</a>
-                        </article>
-                    </div>
-
-                    <div class="col-12 col-md-3">
-                        <article class="food">
-                            <a href="#"><img src="./assets/images/menu-7.jpg" alt="meal"></a>
-                            <h2><a href="#">Ullamcorper Facilisis</a></h2>
-                            <p>$10.00 / Person</p>
-                            <p>Lorem ipsum dolor sit amet consectetur adipisicing.</p>
-                            <a href="#" class="order-btn">Order Now</a>
-                        </article>
-                    </div>
-
-                    <div class="col-12 col-md-3">
-                        <article class="food">
-                            <a href="#"><img src="./assets/images/menu-8.jpg" alt="meal"></a>
-                            <h2><a href="#">Integer Ullamcorper</a></h2>
-                            <p>$22.00 / Person</p>
-                            <p>Lorem ipsum dolor sit amet consectetur adipisicing.</p>
-                            <a href="#" class="order-btn">Order Now</a>
-                        </article>
-                    </div>
-
-
-                    <div class="col-12 text-center mt-3 mb-2">
-                        <a href="menu.html" class="view-more-btn">
-                            <i class="fa-solid fa-utensils"></i> View More
-                        </a>
-                    </div>
-                </div>
-
-            </section>
-
-            <section class="our-chef">
-                <div class="row">
-                    <h1 class="chef-heading section-title">Meet Our Chef</h1>
-
-                    <div class="col-12 col-md-3 chef-box">
-                        <article class="chef">
-                            <a href="#"><img src="./assets/images/team-1.jpg" alt="chef"></a>
-                            <h2><a href="#" class="chef-name">Don Dennis</a></h2>
-                            <p>Assistant Chef</p>
-                            <p class="chef-contact">
+                        <div class="about-intro col-md-7">
+                            <h1 class="section-title">About Us</h1>
+                            <p>
                                 <a href="#"><i class="fa-brands fa-twitter"></i></a>
                                 <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
+                                <a href="#"><i class="fa-brands fa-pinterest"></i></a>
                                 <a href="#"><i class="fa-brands fa-google-plus-g"></i></a>
                             </p>
-                        </article>
-                    </div>
-                    <div class="col-12 col-md-3 chef-box">
-                        <article class="chef">
-                            <a href="#"><img src="./assets/images/team-2.jpg" alt="chef"></a>
-                            <h2><a href="#" class="chef-name">Mary Tejeda</a></h2>
-                            <p>Assistant Chef</p>
-                            <p class="chef-contact">
-                                <a href="#"><i class="fa-brands fa-twitter"></i></a>
-                                <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
-                                <a href="#"><i class="fa-brands fa-google-plus-g"></i></a>
+                            <p>
+                                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam convallis quam sed
+                                tincidunt accumsan. Aliquam at tincidunt tortor, ac porta turpis. Curabitur lacinia
+                                venenatis semper.
                             </p>
-                        </article>
-                    </div>
-                    <div class="col-12 col-md-3 chef-box">
-                        <article class="chef">
-                            <a href="#"><img src="./assets/images/team-3.jpg" alt="chef"></a>
-                            <h2><a href="#" class="chef-name">Scott Williams</a></h2>
-                            <p>Assistant Chef</p>
-                            <p class="chef-contact">
-                                <a href="#"><i class="fa-brands fa-twitter"></i></a>
-                                <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
-                                <a href="#"><i class="fa-brands fa-google-plus-g"></i></a>
+                            <p>
+                                Aliquam ut nibh ut lacus posuere facilisis. Vestibulum ullamcorper arcu et bibendum
+                                ultrices. Suspendisse rutrum turpis vitae.
                             </p>
-                        </article>
+                            <div class="about-box-row row g-4">
+                                <div class="col-12 col-md-6">
+                                    <div class="about-box">
+                                        <h2>Our Features</h2>
+                                        <p>
+                                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam dignissim mi
+                                            arcu, ut tristique dui eleifend a. Vivamus ac nulla metus. Vestibulum
+                                            sit amet quam tincidunt.
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <div class="about-box">
+                                        <h2>Our Facilities</h2>
+                                        <p>
+                                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam dignissim mi
+                                            arcu, ut tristique dui eleifend a. Vivamus ac nulla metus. Vestibulum
+                                            sit amet quam tincidunt.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-12 col-md-3 chef-box">
-                        <article class="chef">
-                            <a href="#"><img src="./assets/images/team-4.jpg" alt="chef"></a>
-                            <h2><a href="#" class="chef-name">Mary Hall</a></h2>
-                            <p>Assistant Chef</p>
-                            <p class="chef-contact">
-                                <a href="#"><i class="fa-brands fa-twitter"></i></a>
-                                <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
-                                <a href="#"><i class="fa-brands fa-google-plus-g"></i></a>
-                            </p>
-                        </article>
+                </section>
+
+                <section class="food-menu">
+                    <div class="section-box row g-4">
+                        <h1 class="food-menu-heading section-title">Delicious Food Menu</h1>
+                        <div class="col-12 col-md-3">
+                            <article class="food">
+                                <a href="#"><img src="./assets/images/menu-1.jpg" alt="meal"></a>
+                                <h2><a href="#">Lorem ipsum</a></h2>
+                                <p>$20.00 / Person</p>
+                                <p>Lorem ipsum dolor sit amet consectetur adipisicing.</p>
+                                <a href="#" class="order-btn">Order Now</a>
+                            </article>
+                        </div>
+                        <div class="col-12 col-md-3">
+                            <article class="food">
+                                <a href="#"><img src="./assets/images/menu-2.jpg" alt="meal"></a>
+                                <h2><a href="#">Curabitur Commodo</a></h2>
+                                <p>$10.00 / Person</p>
+                                <p>Lorem ipsum dolor sit amet consectetur adipisicing.</p>
+                                <a href="#" class="order-btn">Order Now</a>
+                            </article>
+                        </div>
+
+                        <div class="col-12 col-md-3">
+                            <article class="food">
+                                <a href="#"><img src="./assets/images/menu-3.jpg" alt="meal"></a>
+                                <h2><a href="#">Proin Tortor</a></h2>
+                                <p>$12.00 / Person</p>
+                                <p>Lorem ipsum dolor sit amet consectetur adipisicing.</p>
+                                <a href="#" class="order-btn">Order Now</a>
+                            </article>
+                        </div>
+
+                        <div class="col-12 col-md-3">
+                            <article class="food">
+                                <a href="#"><img src="./assets/images/menu-4.jpg" alt="meal"></a>
+                                <h2><a href="#">Aliquam Erat</a></h2>
+                                <p>$8.00 / Person</p>
+                                <p>Lorem ipsum dolor sit amet consectetur adipisicing.</p>
+                                <a href="#" class="order-btn">Order Now</a>
+                            </article>
+                        </div>
+
+                        <div class="col-12 col-md-3">
+                            <article class="food">
+                                <a href="#"><img src="./assets/images/menu-5.jpg" alt="meal"></a>
+                                <h2><a href="#">Curabitur Arcu Massa</a></h2>
+                                <p>$18.00 / Person</p>
+                                <p>Lorem ipsum dolor sit amet consectetur adipisicing.</p>
+                                <a href="#" class="order-btn">Order Now</a>
+                            </article>
+                        </div>
+
+                        <div class="col-12 col-md-3">
+                            <article class="food">
+                                <a href="#"><img src="./assets/images/menu-6.jpg" alt="meal"></a>
+                                <h2><a href="#">Vestibulum Fringilla</a></h2>
+                                <p>$15.00 / Person</p>
+                                <p>Lorem ipsum dolor sit amet consectetur adipisicing.</p>
+                                <a href="#" class="order-btn">Order Now</a>
+                            </article>
+                        </div>
+
+                        <div class="col-12 col-md-3">
+                            <article class="food">
+                                <a href="#"><img src="./assets/images/menu-7.jpg" alt="meal"></a>
+                                <h2><a href="#">Ullamcorper Facilisis</a></h2>
+                                <p>$10.00 / Person</p>
+                                <p>Lorem ipsum dolor sit amet consectetur adipisicing.</p>
+                                <a href="#" class="order-btn">Order Now</a>
+                            </article>
+                        </div>
+
+                        <div class="col-12 col-md-3">
+                            <article class="food">
+                                <a href="#"><img src="./assets/images/menu-8.jpg" alt="meal"></a>
+                                <h2><a href="#">Integer Ullamcorper</a></h2>
+                                <p>$22.00 / Person</p>
+                                <p>Lorem ipsum dolor sit amet consectetur adipisicing.</p>
+                                <a href="#" class="order-btn">Order Now</a>
+                            </article>
+                        </div>
+
+
+                        <div class="col-12 text-center mt-3 mb-2">
+                            <a href="menu.html" class="view-more-btn">
+                                <i class="fa-solid fa-utensils"></i> View More
+                            </a>
+                        </div>
                     </div>
-                </div>
 
-            </section>
+                </section>
 
-            <section class="food-lover-slider">
+                <section class="our-chef">
+                    <div class="row">
+                        <h1 class="chef-heading section-title">Meet Our Chef</h1>
 
-                <div class="section-box">
+                        <div class="col-12 col-md-3 chef-box">
+                            <article class="chef">
+                                <a href="#"><img src="./assets/images/team-1.jpg" alt="chef"></a>
+                                <h2><a href="#" class="chef-name">Don Dennis</a></h2>
+                                <p>Assistant Chef</p>
+                                <p class="chef-contact">
+                                    <a href="#"><i class="fa-brands fa-twitter"></i></a>
+                                    <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
+                                    <a href="#"><i class="fa-brands fa-google-plus-g"></i></a>
+                                </p>
+                            </article>
+                        </div>
+                        <div class="col-12 col-md-3 chef-box">
+                            <article class="chef">
+                                <a href="#"><img src="./assets/images/team-2.jpg" alt="chef"></a>
+                                <h2><a href="#" class="chef-name">Mary Tejeda</a></h2>
+                                <p>Assistant Chef</p>
+                                <p class="chef-contact">
+                                    <a href="#"><i class="fa-brands fa-twitter"></i></a>
+                                    <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
+                                    <a href="#"><i class="fa-brands fa-google-plus-g"></i></a>
+                                </p>
+                            </article>
+                        </div>
+                        <div class="col-12 col-md-3 chef-box">
+                            <article class="chef">
+                                <a href="#"><img src="./assets/images/team-3.jpg" alt="chef"></a>
+                                <h2><a href="#" class="chef-name">Scott Williams</a></h2>
+                                <p>Assistant Chef</p>
+                                <p class="chef-contact">
+                                    <a href="#"><i class="fa-brands fa-twitter"></i></a>
+                                    <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
+                                    <a href="#"><i class="fa-brands fa-google-plus-g"></i></a>
+                                </p>
+                            </article>
+                        </div>
+                        <div class="col-12 col-md-3 chef-box">
+                            <article class="chef">
+                                <a href="#"><img src="./assets/images/team-4.jpg" alt="chef"></a>
+                                <h2><a href="#" class="chef-name">Mary Hall</a></h2>
+                                <p>Assistant Chef</p>
+                                <p class="chef-contact">
+                                    <a href="#"><i class="fa-brands fa-twitter"></i></a>
+                                    <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
+                                    <a href="#"><i class="fa-brands fa-google-plus-g"></i></a>
+                                </p>
+                            </article>
+                        </div>
+                    </div>
 
-                    <h1 class="section-title">Our Food Lovers</h1>
+                </section>
 
-                    <div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel"
-                         data-bs-interval="5000">
-                        <div class="carousel-indicators">
-                            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0"
+                <section class="food-lover-slider">
+
+                    <div class="section-box">
+
+                        <h1 class="section-title">Our Food Lovers</h1>
+
+                        <div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel"
+                            data-bs-interval="5000">
+                            <div class="carousel-indicators">
+                                <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0"
                                     class="active" aria-current="true" aria-label="Slide 1"></button>
-                            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1"
+                                <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1"
                                     aria-label="Slide 2"></button>
-                            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2"
+                                <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2"
                                     aria-label="Slide 3"></button>
+                            </div>
+                            <div class="carousel-inner">
+                                <div class="carousel-item active">
+                                    <div class="row g-4 gx-md-5">
+                                        <div class="col-md-4">
+                                            <a href="#">
+                                                <img src="./assets/images/testimonial-1.jpg" class="d-block w-100"
+                                                    alt="...">
+                                            </a>
+                                        </div>
+                                        <div class="col-md-8 lover-content">
+                                            <h2><a href="#">Jamie D. Boyd</a></h2>
+                                            <p>
+                                                Oral Radiologist
+                                            </p>
+                                            <p>
+                                                <span><i class="fa-solid fa-quote-left"></i></span>
+                                                Commodo sed hendrerit id, posuere
+                                                tempus odio. Phasellus vel leo aliquam, interdum massa quis, aliquam
+                                                sapien.
+                                                Aliquam erat volutpat. Etiam nec feugiat libero. Phasellus in ipsum
+                                                nunc.
+                                                <span><i class="fa-solid fa-quote-right icon"></i></span>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="carousel-item">
+                                    <div class="row g-4 gx-md-5">
+                                        <div class="col-md-4">
+                                            <a href="#">
+                                                <img src="./assets/images/testimonial-2.jpg" class="d-block w-100"
+                                                    alt="...">
+                                            </a>
+                                        </div>
+                                        <div class="col-md-8 lover-content">
+                                            <h2><a href="#">Albert J. Cerrato</a></h2>
+                                            <p>Craft Artist</p>
+                                            <p>
+                                                <span><i class="fa-solid fa-quote-left"></i></span>Proin ut dui
+                                                dictum ligula
+                                                condimentum
+                                                cursus. Ut orci arcu, commodo sed hendrerit id, posuere tempus odio.
+                                                Phasellus vel leo aliquam, interdum massa quis, aliquam sapien.
+                                                Aliquam erat
+                                                volutpat
+                                                <span><i class="fa-solid fa-quote-right"></i></span>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="carousel-item">
+                                    <div class="row g-4 gx-md-5">
+                                        <div class="col-md-4">
+                                            <a href="#">
+                                                <img src="./assets/images/testimonial-3.jpg" class="d-block w-100"
+                                                    alt="...">
+                                            </a>
+                                        </div>
+                                        <div class="col-md-8 lover-content">
+                                            <h2><a href="#">Theresa R. Wood</a></h2>
+                                            <p>Prepress Technician</p>
+                                            <p>
+                                                <span><i class="fa-solid fa-quote-left"></i></span>
+                                                Dictum ligula condimentum cursus commodo sed hendrerit id, posuere
+                                                tempus
+                                                odio. Phasellus vel leo aliquam, interdum massa quis, aliquam
+                                                sapien.
+                                                Aliquam erat volutpat. Etiam nec ultricies semper risus.
+                                                <span><i class="fa-solid fa-quote-right"></i></span>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="carousel-inner">
-                            <div class="carousel-item active">
-                                <div class="row g-4 gx-md-5">
-                                    <div class="col-md-4">
-                                        <a href="#">
-                                            <img src="./assets/images/testimonial-1.jpg" class="d-block w-100"
-                                                 alt="...">
-                                        </a>
-                                    </div>
-                                    <div class="col-md-8 lover-content">
-                                        <h2><a href="#">Jamie D. Boyd</a></h2>
-                                        <p>
-                                            Oral Radiologist
-                                        </p>
-                                        <p>
-                                            <span><i class="fa-solid fa-quote-left"></i></span>
-                                            Commodo sed hendrerit id, posuere
-                                            tempus odio. Phasellus vel leo aliquam, interdum massa quis, aliquam
-                                            sapien.
-                                            Aliquam erat volutpat. Etiam nec feugiat libero. Phasellus in ipsum
-                                            nunc.
-                                            <span><i class="fa-solid fa-quote-right icon"></i></span>
-                                        </p>
-                                    </div>
+
+                    </div>
+                </section>
+
+                <section class="contact-us ">
+
+                    <div class="section-box row">
+
+                        <h1 class="section-title">Contact Us</h1>
+
+                        <div class="contact-us-info col-md-6">
+                            <div class="contact-container">
+                                <div class="contact-box">
+                                    <h2>Opening Hour </h2>
+                                    <p>Monday-Friday: 7am to 12am</p>
+                                    <p>Saturday: 5pm to 12am</p>
+                                    <p>Sunday: 9am to 12am</p>
+                                </div>
+                                <div class="contact-box-line"></div>
+                                <div class="contact-box">
+                                    <h2>Contact Info</h2>
+                                    <p>4137 State Street, CA, USA</p>
+                                    <p>+1-234-567-8900</p>
+                                    <p>info@example.com</p>
                                 </div>
                             </div>
-                            <div class="carousel-item">
-                                <div class="row g-4 gx-md-5">
-                                    <div class="col-md-4">
-                                        <a href="#">
-                                            <img src="./assets/images/testimonial-2.jpg" class="d-block w-100"
-                                                 alt="...">
-                                        </a>
+                        </div>
+
+                        <div class="col-md-6 ">
+                            <div class="form-box">
+                                <form action="" method="POST">
+                                    <div class="row gx-5">
+                                        <div class="col-md-6 mb-4 p-0 pe-md-2">
+
+                                            <input type="text" name="name" id="name" placeholder="Your Name">
+                                            <div class="error" id="name-error"></div>
+                                        </div>
+                                        <div class="col-md-6 mb-4 p-0 ps-md-2">
+                                            <input type="text" name="email" id="email" placeholder="Your Email">
+                                            <div class="error" id="email-error"></div>
+                                        </div>
                                     </div>
-                                    <div class="col-md-8 lover-content">
-                                        <h2><a href="#">Albert J. Cerrato</a></h2>
-                                        <p>Craft Artist</p>
-                                        <p>
-                                            <span><i class="fa-solid fa-quote-left"></i></span>Proin ut dui
-                                            dictum ligula
-                                            condimentum
-                                            cursus. Ut orci arcu, commodo sed hendrerit id, posuere tempus odio.
-                                            Phasellus vel leo aliquam, interdum massa quis, aliquam sapien.
-                                            Aliquam erat
-                                            volutpat
-                                            <span><i class="fa-solid fa-quote-right"></i></span>
-                                        </p>
+                                    <div class="row pb-3">
+                                        <input type="text" name="subject" id="subject" placeholder="Subject">
                                     </div>
-                                </div>
-                            </div>
-                            <div class="carousel-item">
-                                <div class="row g-4 gx-md-5">
-                                    <div class="col-md-4">
-                                        <a href="#">
-                                            <img src="./assets/images/testimonial-3.jpg" class="d-block w-100"
-                                                 alt="...">
-                                        </a>
+                                    <div class="row pb-3">
+                                        <textarea name="message" id="message" rows="5" placeholder="Message"></textarea>
                                     </div>
-                                    <div class="col-md-8 lover-content">
-                                        <h2><a href="#">Theresa R. Wood</a></h2>
-                                        <p>Prepress Technician</p>
-                                        <p>
-                                            <span><i class="fa-solid fa-quote-left"></i></span>
-                                            Dictum ligula condimentum cursus commodo sed hendrerit id, posuere
-                                            tempus
-                                            odio. Phasellus vel leo aliquam, interdum massa quis, aliquam
-                                            sapien.
-                                            Aliquam erat volutpat. Etiam nec ultricies semper risus.
-                                            <span><i class="fa-solid fa-quote-right"></i></span>
-                                        </p>
+                                    <div class="row">
+                                        <button type="button" id="message-btn" class="col-md-4">
+                                            Send
+                                            Message
+                                        </button>
                                     </div>
-                                </div>
+                                </form>
                             </div>
                         </div>
                     </div>
 
-                </div>
-            </section>
+                    <h3>Need Reservations? Call Us 24/7 at +1-234-567-8900</h3>
 
-            <section class="contact-us ">
+                </section>
+            </main>
 
-                <div class="section-box row">
+            <footer>
+                <div class="row">
+                    <div class="copyright col-md-6">
+                        <p>© Copyright <span>Your Site Name</span>. All Rights Reserved</p>
+                        <p>Template By <span>CSW 304</span></p>
+                    </div>
+                    <div class="col-md-6">
+                        <p class="footer-info">Get Latest Food Information</p>
+                        <form>
+                            <div class="footer-form">
+                                <div>
+                                    <input type="text" name="footer-email" id="footer-email"
+                                        placeholder="Enter Your Email">
 
-                    <h1 class="section-title">Contact Us</h1>
-
-                    <div class="contact-us-info col-md-6">
-                        <div class="contact-container">
-                            <div class="contact-box">
-                                <h2>Opening Hour </h2>
-                                <p>Monday-Friday: 7am to 12am</p>
-                                <p>Saturday: 5pm to 12am</p>
-                                <p>Sunday: 9am to 12am</p>
+                                </div>
+                                <div><button type="button" id="footer-btn">Submit</button></div>
                             </div>
-                            <div class="contact-box-line"></div>
-                            <div class="contact-box">
-                                <h2>Contact Info</h2>
-                                <p>4137 State Street, CA, USA</p>
-                                <p>+1-234-567-8900</p>
-                                <p>info@example.com</p>
-                            </div>
-                        </div>
+                            <div class="error" id="f-email-error"></div>
+                        </form>
                     </div>
 
-                    <div class="col-md-6 ">
-                        <div class="form-box">
-                            <form action="" method="POST">
-                                <div class="row gx-5">
-                                    <div class="col-md-6 mb-4 p-0 pe-md-2">
-
-                                        <input type="text" name="name" id="name" placeholder="Your Name">
-                                        <div class="error" id="name-error"></div>
-                                    </div>
-                                    <div class="col-md-6 mb-4 p-0 ps-md-2">
-                                        <input type="text" name="email" id="email" placeholder="Your Email">
-                                        <div class="error" id="email-error"></div>
-                                    </div>
-                                </div>
-                                <div class="row pb-3">
-                                    <input type="text" name="subject" id="subject" placeholder="Subject">
-                                </div>
-                                <div class="row pb-3">
-                                    <textarea name="message" id="message" rows="5" placeholder="Message"></textarea>
-                                </div>
-                                <div class="row">
-                                    <button type="button" id="message-btn" class="col-md-4">
-                                        Send
-                                        Message
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
                 </div>
 
-                <h3>Need Reservations? Call Us 24/7 at +1-234-567-8900</h3>
-
-            </section>
-        </main>
-
-        <footer>
-            <div class="row">
-                <div class="copyright col-md-6">
-                    <p>© Copyright <span>Your Site Name</span>. All Rights Reserved</p>
-                    <p>Template By <span>CSW 304</span></p>
-                </div>
-                <div class="col-md-6">
-                    <p class="footer-info">Get Latest Food Information</p>
-                    <form>
-                        <div class="footer-form">
-                            <div>
-                                <input type="text" name="footer-email" id="footer-email"
-                                       placeholder="Enter Your Email">
-
-                            </div>
-                            <div><button type="button" id="footer-btn">Submit</button></div>
-                        </div>
-                        <div class="error" id="f-email-error"></div>
-                    </form>
-                </div>
-
+            </footer>
+            <!-- Cart Icon & Sidebar -->
+            <div class="cart-icon" id="cartIcon">
+                <i class="fa-solid fa-bag-shopping"></i>
+                <span class="cart-badge" id="cartBadge">0</span>
             </div>
 
-        </footer>
-        <!-- Cart Icon & Sidebar -->
-        <div class="cart-icon" id="cartIcon">
-            <i class="fa-solid fa-bag-shopping"></i>
-            <span class="cart-badge" id="cartBadge">0</span>
+            <div class="cart-overlay" id="cartOverlay"></div>
+
+            <div class="cart-sidebar" id="cartSidebar">
+                <div class="cart-header">
+                    <h3><i class="fa-solid fa-bag-shopping"></i> Your Cart</h3>
+                    <button class="close-cart" id="closeCartBtn">&times;</button>
+                </div>
+                <div class="cart-items" id="cartItems">
+                    <div class="empty-cart">
+                        <i class="fa-solid fa-basket-shopping"></i>
+                        <p>Your cart is empty</p>
+                    </div>
+                </div>
+                <div class="cart-footer" id="cartFooter" style="display: none;">
+                    <div class="cart-total">
+                        <span>Total:</span>
+                        <span id="cartTotal">$0.00</span>
+                    </div>
+                    <button class="checkout-btn" id="checkoutBtn">Proceed to Checkout</button>
+                </div>
+            </div>
         </div>
 
-        <div class="cart-overlay" id="cartOverlay"></div>
+        <script src="./assets/js/cart.js"></script>
 
-        <div class="cart-sidebar" id="cartSidebar">
-            <div class="cart-header">
-                <h3><i class="fa-solid fa-bag-shopping"></i> Your Cart</h3>
-                <button class="close-cart" id="closeCartBtn">&times;</button>
-            </div>
-            <div class="cart-items" id="cartItems">
-                <div class="empty-cart">
-                    <i class="fa-solid fa-basket-shopping"></i>
-                    <p>Your cart is empty</p>
-                </div>
-            </div>
-            <div class="cart-footer" id="cartFooter" style="display: none;">
-                <div class="cart-total">
-                    <span>Total:</span>
-                    <span id="cartTotal">$0.00</span>
-                </div>
-                <button class="checkout-btn" id="checkoutBtn">Proceed to Checkout</button>
-            </div>
-        </div>
-    </div>
+        <script src="./assets/js/BDrestaurant-cart.js"></script>
 
-    <script src="./assets/js/cart.js"></script>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-    <script src="./assets/js/BDrestaurant-cart.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-
-    <script src="./assets/js/BDrestaurant.js"></script>
-</body>
+        <script src="./assets/js/BDrestaurant.js"></script>
+    </body>
 
 </html>

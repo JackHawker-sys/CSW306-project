@@ -79,40 +79,6 @@ setInterval(() => {
 
 updateDots();
 
-// Reservation
-const icon = document.querySelector("#size-toggle");
-const list = document.querySelector(".size-list");
-
-icon.addEventListener("click", () => {
-    list.style.display = list.style.display === "block" ? "none" : "block"
-})
-
-const partySize = document.querySelector("#party-size");
-
-list.addEventListener("click", function (e) {
-    partySize.value = e.target.innerText;
-});
-
-document.addEventListener("click", function (e) {
-    if (!icon.contains(e.target)) {
-        list.style.display = "none";
-    }
-});
-
-flatpickr("#date", {
-    dateFormat: "d M Y",
-    minDate: "today",
-    disableMobile: true
-});
-
-flatpickr("#time", {
-    enableTime: true,
-    noCalendar: true,
-    dateFormat: "H:i",
-    time_24hr: true,
-    disableMobile: true
-});
-
 //go top
 (function () {
     const btn = document.getElementById('goTop');
