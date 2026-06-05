@@ -66,7 +66,7 @@ namespace RestaurantManagement.Controller
 
             return Ok(activeUser);
         }
-        
+
         // Get Chef for Admin Dashboard
         [HttpGet("chefs")]
         [Authorize(Policy = "Admin")]
@@ -87,29 +87,18 @@ namespace RestaurantManagement.Controller
             return Ok(chefs);
         }
 
-        // Đăng ký khách hàng mới
-        [HttpPost("register")]
-        public async Task<IActionResult> Register([FromForm] RegisterDto register)
+        //Hàm đăng ký người dùng
+        private async Task<IActionResult> UserRegister(RegisterDto register, string role)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            bool userExists = _context.Users
-                .Any(x => x.Username == register.Username);
-
-            if (userExists)
+            if (_context.Users.Any(x => x.Username == register.Username))
                 return Conflict(new { message = "Username is already existed." });
 
-            bool emailExists = _context.Users
-                .Any(x => x.Email == register.Email);
-
-            bool phoneExists = _context.Users
-                .Any(x=> x.Phone == register.Phone);
-
-            if (emailExists)
+            if (_context.Users.Any(x => x.Email == register.Email))
                 return Conflict(new { message = "Email is already existed." });
 
-            // Validate email domain - only @gmail.com or @eiu.edu.vn
             if (!register.Email.EndsWith("@gmail.com") && !register.Email.EndsWith("@eiu.edu.vn"))
                 return BadRequest(new { message = "Email must be @gmail.com or @eiu.edu.vn!" });
 
@@ -123,7 +112,7 @@ namespace RestaurantManagement.Controller
                 Email = register.Email,
                 Phone = register.Phone,
                 ActiveCode = activeCode,
-                Role = "Customer",
+                Role = role,
                 IsActive = false,
                 IsDeleted = false,
                 IsLocked = false
@@ -136,6 +125,17 @@ namespace RestaurantManagement.Controller
 
             return Ok(new { message = "Registration successful. Please activate your account.", activeCode });
         }
+
+        // Đăng ký Chef mới
+        [HttpPost("register-chef")]
+        [Authorize(Policy = "Admin")]
+        public async Task<IActionResult> ChefRegister([FromForm] RegisterDto register)
+    => await UserRegister(register, "Chef");
+
+        // Đăng ký khách hàng mới
+        [HttpPost("register")]
+        public async Task<IActionResult> CustomerRegister([FromForm] RegisterDto register)
+    => await UserRegister(register, "Customer");
 
         // Chỉnh sửa thông tin khách hàng
         [HttpPut("{id}")]
