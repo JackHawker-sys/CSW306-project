@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -103,5 +104,51 @@ namespace RestaurantManagement.Controller
                 );
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+
+        // Bắt người dùng nhập email để xác thực xem nó có tồn tại trong cơ sở dữ liệu của hệ thống hay không
+        [HttpPost("email-verification")]
+        public async Task<IActionResult> Forgot([FromBody] string Email)
+        {
+            var user = await _context.Users
+                .FirstOrDefaultAsync(u => u.Email == Email);
+            if (user == null)
+                return NotFound(new { message = "Email does not exsits." });
+            
+            if (!user.IsActive)
+                return Unauthorized(new { message = "User is inactive!" });
+
+            if (user.IsDeleted)
+                return Unauthorized(new { message = "User has been deleted!" });
+
+            if (user.IsLocked)
+                return Unauthorized(new { message = "User has been locked!" });
+           
+            await _emailService.SendVerificationCodeAsync(Email, user.ActiveCode);
+           
+            return Ok("Active code has been sent to your email!");
+        }
+
+        // Người dùng kiểm tra email và nhập active code. 
+        // api sẽ kiểm tra xem người dùng có tồn tại không thông qua active code 
+        // sau đấy sẽ kiểm tra password và confirm password xem có match hay không
+        // nếu match thì lưu lại mật khẩu mới vào trong cơ sở dũ liệu cho người dùng. 
+        [HttpPost("forgot-password")]
+        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPassword request)
+        {
+            var user = await _context.Users
+                .FirstOrDefaultAsync(u => u.ActiveCode == request.ActiveCode);
+
+            if (user == null)
+                return NotFound(new { message = "Active code does not match!" });
+
+            if (request.Password != request.ConfirmPassword)
+                return BadRequest(new { message = "Password does not match!" });
+            
+            user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password);
+            await _context.SaveChangesAsync();
+            return Ok(new { message = "Password has been changed sucessfully" });
+
+        }
+
     }
 }
