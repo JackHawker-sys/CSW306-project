@@ -27,7 +27,7 @@ namespace RestaurantManagement.Services
                 <h2>Restaurant Management</h2>
                 <p>Your verification code is:</p>
                 <h1 style='font-size:18px;color:#4F46E5;'>{code}</h1>
-                
+
             "
                 };
 
