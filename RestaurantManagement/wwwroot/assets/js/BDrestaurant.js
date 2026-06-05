@@ -105,6 +105,11 @@ updateDots();
     onScroll();
 })();
 
+//Log in
+if (!localStorage.getItem('authToken')) {
+    document.querySelector(".primary-menu ul").insertAdjacentHTML(`beforeend`, `<li><a href="login.html">Login</a></li>`);
+}
+
 //Primary menu
 const openMenu = document.querySelector("#hamburger");
 const closeMenu = document.querySelector("#close-btn");
@@ -124,34 +129,6 @@ closeMenu.addEventListener("click", function () {
 });
 
 // Validate form
-// Reservation
-const date = document.querySelector("#date");
-const time = document.querySelector("#time");
-const bookBtn = document.querySelector("#book-btn");
-
-const dateE = document.querySelector("#date-error");
-const timeE = document.querySelector("#time-error");
-const partyE = document.querySelector("#party-error")
-bookBtn.addEventListener("click", function () {
-    if (!date.value) {
-        dateE.innerText = "*Date must be filled!"
-    } else {
-        dateE.innerText = ""
-    }
-
-    if (!time.value) {
-        timeE.innerText = "*Time must be filled!"
-    } else {
-        timeE.innerText = ""
-    }
-
-    if (partySize.value === "") {
-        partyE.innerText = "*Party size must be filled!"
-    } else {
-        partyE.innerText = ""
-    }
-});
-
 // Main form
 const Mname = document.querySelector("#name");
 const email = document.querySelector("#email");

@@ -16,8 +16,11 @@ main,
 footer {
     max-width: 1140px;
     margin: auto;
-    background: #FFD700;
     font-family: 'Open Sans', sans-serif;
+}
+
+html {
+    background-color: #FFD700 !important;
 }
 
 h1,
@@ -29,6 +32,7 @@ h3 {
 body>.container {
     box-shadow: 10px 0 15px rgba(0, 0, 0, 0.2),
         -10px 0 15px rgba(0, 0, 0, 0.2);
+    background-color: #FFD700;
 }
 
 body .container {
