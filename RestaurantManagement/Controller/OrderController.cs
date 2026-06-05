@@ -145,8 +145,17 @@ namespace RestaurantManagement.Controllers
             if (user == null)
                 return NotFound(new { message = "User Not Found." });
 
-            // KHÔNG còn kiểm tra order active tồn tại nữa
-            // Cho phép tạo nhiều order
+            // 1 user chỉ có 1 order active tại 1 thời điểm
+            var exist = await _context.Orders
+                .FirstOrDefaultAsync(o => o.UserId == UserId
+                                       && !o.IsFinished
+                                       && !o.IsDeleted);
+            if (exist != null)
+                return BadRequest(new
+                {
+                    message = "You already have an unfinished order.",
+                    orderId = exist.OrderId
+                });
 
             var order = new Order
             {
@@ -163,8 +172,8 @@ namespace RestaurantManagement.Controllers
 
             return CreatedAtAction(nameof(GetById), new { id = order.OrderId }, new
             {
-                message = "Order created successfully.",
-                orderId = order.OrderId
+                message = "Order create Successfully.",
+                orderId = order.OrderId  // trả về để OrderDetail dùng
             });
         }
 
