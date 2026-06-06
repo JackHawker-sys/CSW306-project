@@ -16,13 +16,17 @@
     --radius: 10px;
 }
 
-html, body {
+html,
+body {
     font-family: 'Open Sans', sans-serif;
     background-color: var(--bg-light);
     color: var(--text-dark);
 }
 
-h1, h2, h3, h4 {
+h1,
+h2,
+h3,
+h4 {
     font-family: 'Nunito', sans-serif;
 }
 
@@ -83,12 +87,12 @@ h1, h2, h3, h4 {
     transition: all 0.3s ease;
 }
 
-    .back-btn:hover {
-        background-color: #e6c200;
-        color: var(--dark-green);
-        transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-    }
+.back-btn:hover {
+    background-color: #e6c200;
+    color: var(--dark-green);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
 
 /* ── Hero ────────────────────────────────── */
 .menu-hero {
@@ -101,12 +105,12 @@ h1, h2, h3, h4 {
     overflow: hidden;
 }
 
-    .menu-hero::before {
-        content: '';
-        position: absolute;
-        inset: 0;
-        background-image: repeating-linear-gradient( 45deg, transparent, transparent 30px, rgba(255, 215, 0, 0.04) 30px, rgba(255, 215, 0, 0.04) 60px );
-    }
+.menu-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: repeating-linear-gradient(45deg, transparent, transparent 30px, rgba(255, 215, 0, 0.04) 30px, rgba(255, 215, 0, 0.04) 60px);
+}
 
 .menu-hero-overlay {
     position: absolute;
@@ -121,21 +125,21 @@ h1, h2, h3, h4 {
     z-index: 1;
 }
 
-    .menu-hero-content h1 {
-        font-size: 54px;
-        font-weight: 900;
-        color: var(--main-yellow);
-        letter-spacing: 0.08em;
-        text-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
-        margin: 0;
-    }
+.menu-hero-content h1 {
+    font-size: 54px;
+    font-weight: 900;
+    color: var(--main-yellow);
+    letter-spacing: 0.08em;
+    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
+    margin: 0;
+}
 
-    .menu-hero-content p {
-        font-size: 17px;
-        color: rgba(255, 255, 255, 0.85);
-        margin-top: 8px;
-        font-style: italic;
-    }
+.menu-hero-content p {
+    font-size: 17px;
+    color: rgba(255, 255, 255, 0.85);
+    margin-top: 8px;
+    font-style: italic;
+}
 
 /* ── Main ────────────────────────────────── */
 .menu-main {
@@ -173,30 +177,30 @@ h1, h2, h3, h4 {
     transition: border-color 0.3s;
 }
 
-    .search-box:focus-within {
-        border-color: var(--dark-green);
-        background: #fff;
-    }
+.search-box:focus-within {
+    border-color: var(--dark-green);
+    background: #fff;
+}
 
-    .search-box i {
-        color: var(--dark-green);
-        font-size: 15px;
-        flex-shrink: 0;
-    }
+.search-box i {
+    color: var(--dark-green);
+    font-size: 15px;
+    flex-shrink: 0;
+}
 
-    .search-box input {
-        border: none;
-        outline: none;
-        background: transparent;
-        font-size: 15px;
-        font-family: 'Open Sans', sans-serif;
-        width: 100%;
-        color: var(--text-dark);
-    }
+.search-box input {
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 15px;
+    font-family: 'Open Sans', sans-serif;
+    width: 100%;
+    color: var(--text-dark);
+}
 
-        .search-box input::placeholder {
-            color: #aaa;
-        }
+.search-box input::placeholder {
+    color: #aaa;
+}
 
 .menu-count-label {
     font-size: 14px;
@@ -205,11 +209,11 @@ h1, h2, h3, h4 {
     font-weight: 600;
 }
 
-    .menu-count-label span {
-        color: var(--dark-green);
-        font-weight: 800;
-        font-size: 16px;
-    }
+.menu-count-label span {
+    color: var(--dark-green);
+    font-weight: 800;
+    font-size: 16px;
+}
 
 /* ── States ──────────────────────────────── */
 .loading-state,
@@ -220,18 +224,18 @@ h1, h2, h3, h4 {
     color: var(--text-muted);
 }
 
-    .loading-state p,
-    .error-state p,
-    .empty-state p {
-        margin-top: 20px;
-        font-size: 16px;
-    }
+.loading-state p,
+.error-state p,
+.empty-state p {
+    margin-top: 20px;
+    font-size: 16px;
+}
 
-    .error-state i,
-    .empty-state i {
-        font-size: 52px;
-        color: #ccc;
-    }
+.error-state i,
+.empty-state i {
+    font-size: 52px;
+    color: #ccc;
+}
 
 /* Custom spinner matching theme */
 .spinner-border-custom {
@@ -264,9 +268,9 @@ h1, h2, h3, h4 {
     transition: background 0.3s;
 }
 
-    .retry-btn:hover {
-        background: var(--green-hover);
-    }
+.retry-btn:hover {
+    background: var(--green-hover);
+}
 
 /* ── Menu Grid ───────────────────────────── */
 .menu-grid {
@@ -287,10 +291,10 @@ h1, h2, h3, h4 {
     animation: fadeInUp 0.4s ease both;
 }
 
-    .food-card:hover {
-        transform: translateY(-6px);
-        box-shadow: 0 12px 32px rgba(0, 100, 0, 0.15);
-    }
+.food-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 32px rgba(0, 100, 0, 0.15);
+}
 
 @keyframes fadeInUp {
     from {
@@ -310,13 +314,13 @@ h1, h2, h3, h4 {
     height: 180px;
 }
 
-    .card-img-wrap img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        border-radius: var(--radius) var(--radius) 0 0;
-        transition: transform 0.4s ease;
-    }
+.card-img-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: var(--radius) var(--radius) 0 0;
+    transition: transform 0.4s ease;
+}
 
 .food-card:hover .card-img-wrap img {
     transform: scale(1.07);
@@ -332,11 +336,11 @@ h1, h2, h3, h4 {
     border-radius: var(--radius) var(--radius) 0 0;
 }
 
-    .card-img-placeholder i {
-        font-size: 40px;
-        color: var(--dark-green);
-        opacity: 0.5;
-    }
+.card-img-placeholder i {
+    font-size: 40px;
+    color: var(--dark-green);
+    opacity: 0.5;
+}
 
 .card-body {
     padding: 16px;
@@ -395,10 +399,10 @@ h1, h2, h3, h4 {
     align-self: center;
 }
 
-    .card-footer-btn:hover {
-        background-color: var(--green-hover);
-        color: var(--main-yellow);
-    }
+.card-footer-btn:hover {
+    background-color: var(--green-hover);
+    color: var(--main-yellow);
+}
 
 /* ── Modal ───────────────────────────────── */
 .food-modal-content {
@@ -427,9 +431,9 @@ h1, h2, h3, h4 {
     transition: background 0.25s;
 }
 
-    .modal-close-btn:hover {
-        background: rgba(0, 0, 0, 0.8);
-    }
+.modal-close-btn:hover {
+    background: rgba(0, 0, 0, 0.8);
+}
 
 .modal-body-custom {
     display: flex;
@@ -444,16 +448,16 @@ h1, h2, h3, h4 {
     overflow: hidden;
 }
 
-    .modal-img-wrap img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
+.modal-img-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
 
 .modal-img-overlay {
     position: absolute;
     inset: 0;
-    background: linear-gradient(to right, transparent 60%, rgba(255,255,255,0.08));
+    background: linear-gradient(to right, transparent 60%, rgba(255, 255, 255, 0.08));
 }
 
 .modal-info {
@@ -465,15 +469,15 @@ h1, h2, h3, h4 {
     background: #fff;
 }
 
-    .modal-info h2 {
-        font-size: 26px;
-        font-weight: 900;
-        color: var(--dark-green);
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        line-height: 1.2;
-        margin: 0;
-    }
+.modal-info h2 {
+    font-size: 26px;
+    font-weight: 900;
+    color: var(--dark-green);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    line-height: 1.2;
+    margin: 0;
+}
 
 .modal-price-badge {
     display: inline-flex;
@@ -489,9 +493,9 @@ h1, h2, h3, h4 {
     width: fit-content;
 }
 
-    .modal-price-badge i {
-        font-size: 14px;
-    }
+.modal-price-badge i {
+    font-size: 14px;
+}
 
 .modal-desc {
     font-size: 15px;
@@ -520,12 +524,12 @@ h1, h2, h3, h4 {
     transition: all 0.3s ease;
 }
 
-    .modal-order-btn:hover {
-        background: var(--green-hover);
-        color: var(--main-yellow);
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(0, 100, 0, 0.3);
-    }
+.modal-order-btn:hover {
+    background: var(--green-hover);
+    color: var(--main-yellow);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 100, 0, 0.3);
+}
 
 /* ── Footer ──────────────────────────────── */
 .menu-footer {
@@ -554,11 +558,11 @@ h1, h2, h3, h4 {
     border: 2px solid var(--dark-green);
 }
 
-    .view-more-btn:hover {
-        background-color: transparent;
-        color: var(--dark-green);
-        border-color: var(--dark-green);
-    }
+.view-more-btn:hover {
+    background-color: transparent;
+    color: var(--dark-green);
+    border-color: var(--dark-green);
+}
 
 /* ── Responsive ──────────────────────────── */
 @media (max-width: 992px) {
@@ -616,4 +620,43 @@ h1, h2, h3, h4 {
     .menu-hero-content h1 {
         font-size: 30px;
     }
+}
+
+/* ── Order Action Button ─────────────────── */
+#orderActionBtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 24px;
+    border-radius: 30px;
+    font-size: 14px;
+    font-weight: 700;
+    font-family: 'Nunito', sans-serif;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+#orderActionBtn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.btn-start-order {
+    background-color: var(--main-yellow);
+    color: var(--dark-green);
+}
+
+.btn-start-order:hover:not(:disabled) {
+    background-color: #e6c200;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn-active-order {
+    background-color: var(--dark-green);
+    color: var(--main-yellow);
+    cursor: default;
+    /* không click được thêm */
 }

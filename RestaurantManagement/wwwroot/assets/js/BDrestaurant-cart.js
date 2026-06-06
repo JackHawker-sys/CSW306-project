@@ -1,4 +1,6 @@
-﻿document.addEventListener('DOMContentLoaded', function () {
+﻿const API_BASE = 'https://localhost:7037';
+const ORDER_URL = `${API_BASE}/api/Order`;
+document.addEventListener('DOMContentLoaded', function () {
     // Xử lý tất cả nút Order Now trong section food-menu
     const orderButtons = document.querySelectorAll('.food .order-btn');
 

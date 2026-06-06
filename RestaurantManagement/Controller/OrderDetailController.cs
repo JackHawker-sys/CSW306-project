@@ -73,19 +73,17 @@ namespace RestaurantManagement.Controller
 
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> Create([FromBody] CreateOrderDetailsDto dto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
             var order = await _context.Orders
-                .FirstOrDefaultAsync(o => o.OrderId == dto.OrderId && !o.IsDeleted);
+                .FirstOrDefaultAsync(o => o.UserId==GetUserId() && !o.IsFinished);
 
             if (order == null)
                 return NotFound(new { message = "Order not found." });
-
-            if (!IsAdminOrChef() && order.UserId != GetUserId())
-                return Forbid();
 
             if (order.IsFinished)
                 return BadRequest(new { message = "Cannot add items to a finished order." });
@@ -107,7 +105,7 @@ namespace RestaurantManagement.Controller
             // Step 1: Tạo detail
             var details = dto.Items.Select(item => new OrderDetail
             {
-                OrderId = dto.OrderId,
+                OrderId = order.OrderId,
                 FoodId = item.FoodId,
                 Quantity = item.Quantity,
                 UnitPrice = foods[item.FoodId].Price, // snapshot price at time of order
@@ -124,12 +122,12 @@ namespace RestaurantManagement.Controller
                 _context.OrderLogs.Add(BuildLog(d.OrderDetailId, "Pending"));
 
             // Step 3: Tính (lại) tổng tiền cho order
-            await RecalculateTotalAsync(dto.OrderId, order);
+            await RecalculateTotalAsync(order.OrderId, order);
             await _context.SaveChangesAsync();
 
             return Ok(new
             {
-                message = $"{details.Count} item(s) added to order #{dto.OrderId}.",
+                message = $"{details.Count} item(s) added to order #{order.OrderId}.",
                 items = details.Select(d => new
                 {
                     d.OrderDetailId,

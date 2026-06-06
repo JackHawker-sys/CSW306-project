@@ -6,23 +6,24 @@ using RestaurantManagement.DTOs.Order;
 using RestaurantManagement.Models;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore.Query;
 
 namespace RestaurantManagement.Controllers
 {
     [ApiController]
-    [Route("api/order")]
-    public class OrdersController : ControllerBase
+    [Route("api/[controller]")]
+    public class OrderController : ControllerBase
     {
         private readonly RestaurantManagementContext _context;
 
-        public OrdersController(RestaurantManagementContext context)
+        public OrderController(RestaurantManagementContext context)
         {
             _context = context;
         }
 
         // GET api/orders
         // Lấy danh sách đơn hàng, lọc theo filter
-     
+
         [HttpGet]
         [Authorize]
         public async Task<IActionResult> GetAll([FromQuery] string filter = "InProcessing")
@@ -37,7 +38,7 @@ namespace RestaurantManagement.Controllers
             var role = User.FindFirst(ClaimTypes.Role)?.Value;
             var userIdClaim = User.FindFirst("UserId")?.Value;
 
-            if(role == "Customer")
+            if (role == "Customer")
             {
                 if (!int.TryParse(userIdClaim, out var userId))
                     return Unauthorized();
@@ -70,7 +71,7 @@ namespace RestaurantManagement.Controllers
             return Ok(result);
         }
 
-   
+
         // GET api/orders/{id}
         // Chi tiết 1 đơn hàng + danh sách món + log mỗi món
 
@@ -128,6 +129,25 @@ namespace RestaurantManagement.Controllers
 
             return Ok(result);
         }
+
+        private async Task<(bool isValid, IActionResult? errorResult, Order? activeOrder)> CheckOrderAsync(int userId)
+        {
+            var user = await _context.Users
+                .FirstOrDefaultAsync(u => u.UserId == userId
+                               && !u.IsDeleted
+                               && u.IsActive);
+            if (user == null)
+                return (false, NotFound(new { message = "User Not Found." }), null);
+
+            // 1 user chỉ có 1 order active tại 1 thời điểm
+            var activeOrder = await _context.Orders
+                .FirstOrDefaultAsync(o => o.UserId == userId
+                               && !o.IsFinished
+                               && !o.IsDeleted);
+
+            return (true, null, activeOrder);
+        }
+
         // POST api/orders
         // Khách bắt đầu gọi món → tạo Order mới
         // OrderLog không được tự tạo ở Order vì Log gắn với OrderDetailId,
@@ -137,24 +157,16 @@ namespace RestaurantManagement.Controllers
         public async Task<IActionResult> Create()
         {
             var UserId = int.Parse(User.FindFirstValue("UserId"));
+            var (isValid, errorResult, activeOrder) = await CheckOrderAsync(UserId);
 
-            var user = await _context.Users
-                .FirstOrDefaultAsync(u => u.UserId == UserId
-                                       && !u.IsDeleted
-                                       && u.IsActive);
-            if (user == null)
-                return NotFound(new { message = "User Not Found." });
+            if (!isValid)
+                return errorResult;
 
-            // 1 user chỉ có 1 order active tại 1 thời điểm
-            var exist = await _context.Orders
-                .FirstOrDefaultAsync(o => o.UserId == UserId
-                                       && !o.IsFinished
-                                       && !o.IsDeleted);
-            if (exist != null)
+            if(activeOrder != null)
                 return BadRequest(new
                 {
                     message = "You already have an unfinished order.",
-                    orderId = exist.OrderId
+                    orderId = activeOrder.OrderId
                 });
 
             var order = new Order
@@ -175,6 +187,21 @@ namespace RestaurantManagement.Controllers
                 message = "Order create Successfully.",
                 orderId = order.OrderId  // trả về để OrderDetail dùng
             });
+        }
+
+        [HttpGet("isOrder")]
+        [Authorize]
+        public async Task<IActionResult> IsOrder()
+        {
+            var userId = int.Parse(User.FindFirstValue("UserId"));
+            var (isValid, errorResult, activeOrder) = await CheckOrderAsync(userId);
+
+            if (!isValid) return errorResult!;
+
+            if (activeOrder == null)
+                return Ok(new { hasOrder = false, orderId = (int?)null });
+
+            return Ok(new { hasOrder = true, orderId = activeOrder.OrderId });
         }
 
         // PUT api/orders/{id}/status
@@ -319,7 +346,7 @@ namespace RestaurantManagement.Controllers
                 return BadRequest(new { message = "This order is already in process/completed, it can't be deleted!" });
 
             // Soft delete
-            
+
             order.IsDeleted = true;
             foreach (var detail in order.OrderDetails)
                 detail.IsDeleted = true;

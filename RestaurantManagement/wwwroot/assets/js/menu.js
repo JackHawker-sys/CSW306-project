@@ -1,9 +1,11 @@
 ﻿const API_BASE = 'https://localhost:7037';
 const API_URL = `${API_BASE}/api/FoodMenu`;
+const ORDER_URL = `${API_BASE}/api/Order`
 const IMG_BASE = API_BASE;
 
 let allItems = [];
 let modalInstance = null;
+let currentOrderId = null;
 
 // ─── DOM refs ─────────────────────────────────────────────────────────────────
 const menuGrid = document.getElementById('menuGrid');
@@ -39,7 +41,103 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Khởi tạo cart UI
     initCartUI();
+    initOrderButton();
 });
+
+// ─── Check / tạo order ────────────────────────────────────────────────────────
+async function initOrderButton() {
+    const token = localStorage.getItem('authToken');
+    const btn = document.getElementById('orderActionBtn');
+    if (!btn) return;
+
+    if (!token) {
+        btn.style.display = 'none'; // ẩn hẳn nếu chưa login
+        return;
+    }
+    btn.style.display = 'inline-flex'; // hiện ra khi đã login
+    btn.disabled = true;
+    btn.textContent = 'Đang kiểm tra...';
+
+    try {
+        const res = await fetch(`${ORDER_URL}/isOrder`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (!res.ok) throw new Error();
+
+        const data = await res.json();
+
+        if (data.hasOrder) {
+            currentOrderId = data.orderId;
+            setOrderBtn('active', `Ordering #${currentOrderId}`);
+        }
+        else {
+            setOrderBtn('start', `Start ordering`);
+        }
+    } catch {
+        btn.textContent = `Checking Fail`;
+        btn.disabled = true;
+    }
+}
+
+function setOrderBtn(state, label) {
+    const btn = document.getElementById('orderActionBtn');
+    if (!btn)
+        return;
+
+    btn.classList.remove('btn-start-order', 'btn-active-order');
+    btn.disabled = false;
+    btn.textContent = label;
+
+    if (state === 'start') {
+        btn.classList.add('btn-start-order');
+        btn.onclick = handleStartOrder;
+    } else {
+        btn.classList.add('btn-active-order');
+        btn.onclick = null;
+    }
+}
+
+async function handleStartOrder() {
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+        showToast('Please login first', 'error');
+        return;
+    }
+
+    const btn = document.getElementById('orderActionBtn');
+    btn.disabled = true;
+    btn.textContent = 'Starting';
+
+    try {
+        const res = await fetch(ORDER_URL, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            if (res.status === 400 && data.orderId) {
+                currentOrderId = data.orderId;
+                setOrderBtn('active', `Ordering #${currentOrderId}`);
+                return;
+            }
+            throw new Error(data.message || 'Cannot make order.');
+        }
+
+        currentOrderId = data.orderId;
+        setOrderBtn('active', `Ordering #${currentOrderId}`);
+        showToast('Starting new Order!');
+    } catch (err) {
+        showToast(`${err.message}`, 'error');
+        setOrderBtn('start', 'Start ordering')
+    }
+}
+
 
 // ─── Fetch menu từ API ────────────────────────────────────────────────────────
 async function loadMenu() {
@@ -219,12 +317,63 @@ function initCartUI() {
 
     // Thanh toán
     if (checkoutBtn) {
-        checkoutBtn.addEventListener('click', () => {
+        checkoutBtn.addEventListener('click', async () => {
             if (typeof cartManager === 'undefined') return;
             const items = cartManager.getItems();
             if (items.length === 0) return;
-            sessionStorage.setItem('checkout_cart', JSON.stringify(items));
-            window.location.href = 'checkout.html';
+
+            if (!currentOrderId) {
+                showToast('You did not have any order yet. Click "Start ordering" first', 'error');
+                return;
+            }
+
+            const token = localStorage.getItem('authToken');
+            if (!token) {
+                showToast('Please login first.', 'error');
+                return;
+            }
+
+            checkoutBtn.disabled = true;
+            checkoutBtn.textContent = 'Sending...';
+
+            try {
+                const res = await fetch(`${API_BASE}/api/OrderDetail`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        items: items.map(item => ({
+                            foodId: item.foodId,
+                            quantity: item.quantity
+                        }))
+                    })
+                });;
+
+                const data = await res.json();
+
+                if (!res.ok) {
+                    // Order bị finished bất ngờ (Admin đã đóng)
+                    if (res.status === 400 && data.message?.includes('finished')) {
+                        currentOrderId = null;
+                        setOrderBtn('start', 'Bắt đầu gọi món');
+                        showToast('⚠️ Order đã bị đóng. Vui lòng tạo order mới.', 'error');
+                        return;
+                    }
+
+                    throw new Error(data.message || 'Can not send Order.');
+                }
+                // Thành công — giữ currentOrderId vì order vẫn active
+                cartManager.clearCart();
+                showToast(`Ordered ${data.items.length} dishes successfully`);
+
+            } catch (err) {
+                showToast(`${err.message}`, 'error');
+            } finally {
+                checkoutBtn.disabled = false;
+                checkoutBtn.textContent = 'Order';
+            }
         });
     }
 
