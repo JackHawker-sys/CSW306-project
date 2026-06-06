@@ -82,6 +82,7 @@ namespace RestaurantManagement.Controller
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+
             var userId = int.Parse(User.FindFirst("UserId")?.Value);
 
             var order = await _context.Orders
@@ -107,43 +108,84 @@ namespace RestaurantManagement.Controller
                     message = $"Food item(s) not found or deleted: {string.Join(", ", missingIds)}"
                 });
 
-            // Step 1: Tạo detail
-            var details = dto.Items.Select(item => new OrderDetail
+            // Step 0: Nếu món đã tồn tại (Pending) thì cộng quantity thay vì tạo mới
+            var existingDetails = await _context.OrderDetails
+                .Where(od => od.OrderId == order.OrderId && !od.IsDeleted && od.Status == "Pending")
+                .ToListAsync();
+
+            var existingByFoodId = existingDetails.ToDictionary(od => od.FoodId);
+            var newItems = new List<OrderDetailItemDto>();
+
+            foreach (var item in dto.Items)
+            {
+                if (existingByFoodId.TryGetValue(item.FoodId, out var existing))
+                {
+                    existing.Quantity += item.Quantity;
+                    _context.OrderLogs.Add(BuildLog(existing.OrderDetailId, $"Quantity +{item.Quantity}"));
+                }
+                else
+                    newItems.Add(item);
+            }
+
+            await _context.SaveChangesAsync();
+
+            // Step 1: Tạo detail CHỈ cho các món thật sự mới (newItems thay vì dto.Items)
+            var details = newItems.Select(item => new OrderDetail
             {
                 OrderId = order.OrderId,
                 FoodId = item.FoodId,
                 Quantity = item.Quantity,
-                UnitPrice = foods[item.FoodId].Price, // snapshot price at time of order
+                UnitPrice = foods[item.FoodId].Price,
                 Status = "Pending",
                 OrderDate = DateTime.Now,
                 IsDeleted = false
             }).ToList();
 
-            _context.OrderDetails.AddRange(details);
-            await _context.SaveChangesAsync(); // IDs are assigned after this
+            if (details.Any())
+            {
+                _context.OrderDetails.AddRange(details);
+                await _context.SaveChangesAsync();
 
-            // Step 2: Log khi cập nhật status thành Pending
-            foreach (var d in details)
-                _context.OrderLogs.Add(BuildLog(d.OrderDetailId, "Pending"));
+                // Step 2: Log khi tạo mới với status Pending
+                foreach (var d in details)
+                    _context.OrderLogs.Add(BuildLog(d.OrderDetailId, "Pending"));
+            }
 
             // Step 3: Tính (lại) tổng tiền cho order
             await RecalculateTotalAsync(order.OrderId, order);
             await _context.SaveChangesAsync();
 
+            // Gộp kết quả trả về: cả món mới lẫn món đã cộng thêm
+            var updatedItems = existingByFoodId.Values
+                .Where(od => dto.Items.Any(i => i.FoodId == od.FoodId))
+                .Select(od => new
+                {
+                    od.OrderDetailId,
+                    od.FoodId,
+                    FoodName = foods[od.FoodId].Name,
+                    od.Quantity,
+                    od.UnitPrice,
+                    Subtotal = od.UnitPrice * od.Quantity,
+                    od.Status,
+                    od.OrderDate
+                });
+
+            var createdItems = details.Select(d => new
+            {
+                d.OrderDetailId,
+                d.FoodId,
+                FoodName = foods[d.FoodId].Name,
+                d.Quantity,
+                d.UnitPrice,
+                Subtotal = d.UnitPrice * d.Quantity,
+                d.Status,
+                d.OrderDate
+            });
+
             return Ok(new
             {
-                message = $"{details.Count} item(s) added to order #{order.OrderId}.",
-                items = details.Select(d => new
-                {
-                    d.OrderDetailId,
-                    d.FoodId,
-                    FoodName = foods[d.FoodId].Name,
-                    d.Quantity,
-                    d.UnitPrice,
-                    Subtotal = d.UnitPrice * d.Quantity,
-                    d.Status,
-                    d.OrderDate
-                })
+                message = $"{details.Count} new item(s) added, {updatedItems.Count()} item(s) quantity updated in order #{order.OrderId}.",
+                items = updatedItems.Concat(createdItems)
             });
         }
 
