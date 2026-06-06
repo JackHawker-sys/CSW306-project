@@ -142,12 +142,7 @@ function renderOrdersTable() {
 
     switch (currentOrderFilter) {
         case 'processing':
-            filteredOrders = allOrders.filter(o =>
-                !o.isFinished &&
-                o.paymentStatus !== 'Paid' &&
-                o.paymentStatus !== 'Suspended' &&
-                o.details?.some(d => d.status !== 'Completed' && d.status !== 'Cancelled')
-            );
+            filteredOrders = allOrders.filter(o => o.paymentStatus === 'Unpaid');
             break;
         case 'completed':
             filteredOrders = allOrders.filter(o => o.paymentStatus === 'Paid');
