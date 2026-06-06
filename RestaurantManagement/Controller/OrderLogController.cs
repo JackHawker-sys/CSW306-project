@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using RestaurantManagement.DTOs;
 using RestaurantManagement.Data;
 using RestaurantManagement.Models;
+using Microsoft.AspNetCore.Authorization;
 namespace RestaurantManagement.Controller
 {
     [ApiController]
@@ -17,6 +18,7 @@ namespace RestaurantManagement.Controller
         }
 
         [HttpGet]
+        [Authorize(Policy = "Admin")]
         public async Task <IActionResult> GetByOrderdetail([FromQuery] int OrderDetailId)
         {
             var detail = await _context.OrderDetails
@@ -54,6 +56,7 @@ namespace RestaurantManagement.Controller
         // Xem log của tất cả món trong 1 đơn hàng
         // Cho admin xem toàn bộ timeline của 1 order
         [HttpGet("order/{orderId}")]
+        [Authorize(Policy = "Admin")]
         public async Task<IActionResult> GetByOrder(int orderId)
         {
             var order = await _context.Orders

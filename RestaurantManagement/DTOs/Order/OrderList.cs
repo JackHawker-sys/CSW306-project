@@ -35,7 +35,6 @@ namespace RestaurantManagement.DTOs.Order
         public decimal Subtotal { get; set; }  // UnitPrice × Quantity
         public string Status { get; set; }  // Pending | Processing | Completed | Cancelled
         public DateTime OrderDate { get; set; }
-        public List<Log> Logs { get; set; } = new();
     }
 
     //PUT api/orders/{id}/status — cập nhật thanh toán

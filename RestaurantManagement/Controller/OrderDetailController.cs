@@ -10,7 +10,6 @@ namespace RestaurantManagement.Controller
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
     public class OrderDetailController : ControllerBase
     {
         private readonly RestaurantManagementContext _context;
@@ -34,38 +33,43 @@ namespace RestaurantManagement.Controller
         // Trả về detail của một món trong 1 order
         // Customer chỉ xem được trong các order của họ, Admin/Chef xem được tất cả
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<IActionResult> GetById(int id)
         {
             var detail = await _context.OrderDetails
                 .Include(od => od.FoodMenu)
+                .Include(o => o.Order)
                 .FirstOrDefaultAsync(od => od.OrderDetailId == id && !od.IsDeleted);
 
             if (detail == null)
                 return NotFound(new { message = "Order detail not found." });
 
-            // Kiểm tra xem có quyền xem không, xem hàm phụ ở dưới
-            if (!await CanAccessOrderAsync(detail.OrderId))
-                return Forbid();
+            // Kiểm tra Customer chỉ xem được order của chính họ
+            var role = User.FindFirst(ClaimTypes.Role)?.Value;
+            if (role == "Customer")
+            {
+                var userIdClaim = User.FindFirst("UserId")?.Value;
+                if (!int.TryParse(userIdClaim, out var userId) || detail.Order.UserId != userId)
+                    return Forbid();
+            }
 
             return Ok(ToResponse(detail));
         }
 
         // Trả về tất cả order detail (chưa bị xóa) của một order
-        [HttpGet("order/{orderId}")]
-        public async Task<IActionResult> GetByOrder(int orderId)
+        [HttpGet("order/{id}")]
+        [Authorize]
+        public async Task<IActionResult> GetByOrder(int id)
         {
             var order = await _context.Orders
-                .FirstOrDefaultAsync(o => o.OrderId == orderId && !o.IsDeleted);
+                .FirstOrDefaultAsync(o => o.OrderId == id && !o.IsDeleted);
 
             if (order == null)
                 return NotFound(new { message = "Order not found." });
 
-            if (!IsAdminOrChef() && order.UserId != GetUserId())
-                return Forbid();
-
             var details = await _context.OrderDetails
                 .Include(od => od.FoodMenu)
-                .Where(od => od.OrderId == orderId && !od.IsDeleted)
+                .Where(od => od.OrderId == id && !od.IsDeleted)
                 .ToListAsync();
 
             return Ok(details.Select(ToResponse));
@@ -78,9 +82,10 @@ namespace RestaurantManagement.Controller
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+            var userId = int.Parse(User.FindFirst("UserId")?.Value);
 
             var order = await _context.Orders
-                .FirstOrDefaultAsync(o => o.UserId==GetUserId() && !o.IsFinished);
+                .FirstOrDefaultAsync(o => o.UserId == userId && !o.IsFinished);
 
             if (order == null)
                 return NotFound(new { message = "Order not found." });
@@ -187,6 +192,7 @@ namespace RestaurantManagement.Controller
 
         // PATCH: quantity
         [HttpPatch("{id}/quantity")]
+        [Authorize(Policy = "SelfOrAdmin")]
         public async Task<IActionResult> UpdateQuantity(int id, [FromBody] UpdateQuantityDto dto)
         {
             if (!ModelState.IsValid)
@@ -197,9 +203,6 @@ namespace RestaurantManagement.Controller
 
             if (detail == null)
                 return NotFound(new { message = "Order detail not found." });
-
-            if (!await CanAccessOrderAsync(detail.OrderId))
-                return Forbid();
 
             if (detail.Status != "Pending")
                 return BadRequest(new
@@ -226,6 +229,7 @@ namespace RestaurantManagement.Controller
 
 
         [HttpDelete("{id}")]
+        [Authorize(Policy = "Admin")]
         public async Task<IActionResult> Delete(int id)
         {
             var detail = await _context.OrderDetails
@@ -233,9 +237,6 @@ namespace RestaurantManagement.Controller
 
             if (detail == null)
                 return NotFound(new { message = "Order detail not found." });
-
-            if (!await CanAccessOrderAsync(detail.OrderId))
-                return Forbid();
 
             if (detail.Status != "Pending")
                 return BadRequest(new
@@ -251,29 +252,6 @@ namespace RestaurantManagement.Controller
             await _context.SaveChangesAsync();
 
             return Ok(new { message = "Order detail removed from the order." });
-        }
-
-        // Hàm phụ vv
-
-        private int GetUserId()
-            => int.Parse(User.FindFirstValue("UserId")!);
-
-        private bool IsAdminOrChef()
-        {
-            var role = User.FindFirstValue(ClaimTypes.Role);
-            return role is "Admin" or "Chef";
-        }
-
-
-        private async Task<bool> CanAccessOrderAsync(int orderId)
-        {
-            // Admin/ Chef trả thẳng true
-            if (IsAdminOrChef()) return true;
-
-            // Kiểm tra Customer có order đó không
-            var userId = GetUserId();
-            return await _context.Orders
-                .AnyAsync(o => o.OrderId == orderId && o.UserId == userId);
         }
 
         // Tính tổng tiền của các món chưa bị xóa
