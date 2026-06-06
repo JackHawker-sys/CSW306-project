@@ -1,5 +1,7 @@
 ﻿const API_BASE = 'https://localhost:7037';
 const ORDER_URL = `${API_BASE}/api/Order`;
+let currentOrderId = null;
+
 document.addEventListener('DOMContentLoaded', function () {
     // Xử lý tất cả nút Order Now trong section food-menu
     const orderButtons = document.querySelectorAll('.food .order-btn');
@@ -14,7 +16,24 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     initCartUIStatic();
+    initOrderId()
 });
+
+async function initOrderId() {
+    const token = localStorage.getItem('authToken');
+    if (!token) return;
+
+    try {
+        const res = await fetch(`${ORDER_URL}/isOrder`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (!res.ok) return;
+        const data = await res.json();
+        if (data.hasOrder) {
+            currentOrderId = data.orderId;
+        }
+    } catch { }
+}
 
 function showToast(message, type = 'success') {
     const toast = document.createElement('div');
@@ -69,12 +88,62 @@ function initCartUIStatic() {
     if (cartOverlay) cartOverlay.addEventListener('click', closeCart);
 
     if (checkoutBtn) {
-        checkoutBtn.addEventListener('click', () => {
+        checkoutBtn.addEventListener('click', async () => {
             if (typeof cartManager === 'undefined') return;
             const items = cartManager.getItems();
             if (items.length === 0) return;
-            sessionStorage.setItem('checkout_cart', JSON.stringify(items));
-            window.location.href = 'checkout.html';
+
+            if (!currentOrderId) {
+                showToast('You did not have any order yet. Click "Start ordering" first', 'error');
+                return;
+            }
+
+            const token = localStorage.getItem('authToken');
+            if (!token) {
+                showToast('Please login first.', 'error');
+                return;
+            }
+            checkoutBtn.disabled = true;
+            checkoutBtn.textContent = 'Sending...';
+
+            try {
+                const res = await fetch(`${API_BASE}/api/OrderDetail`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        items: items.map(item => ({
+                            foodId: item.foodId,
+                            quantity: item.quantity
+                        }))
+                    })
+                });
+
+                const data = await res.json();
+
+                if (!res.ok) {
+                    if (res.status === 400 && data.message?.includes('finished')) {
+                        currentOrderId = null;
+                        showToast('⚠️ Order đã bị đóng. Vui lòng tạo order mới.', 'error');
+                        return;
+                    }
+                    throw new Error(data.message || 'Can not send Order.');
+                }
+
+                cartManager.clearCart();
+                showToast(`Ordered ${data.items.length} dishes successfully`);
+
+            } catch (err) {
+                showToast(`${err.message}`, 'error');
+            } finally {
+                checkoutBtn.disabled = false;
+                checkoutBtn.textContent = 'Order';
+            }
+
+            // sessionStorage.setItem('checkout_cart', JSON.stringify(items));
+            // window.location.href = 'checkout.html';
         });
     }
 
