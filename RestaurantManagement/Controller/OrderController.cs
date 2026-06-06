@@ -271,7 +271,10 @@ namespace RestaurantManagement.Controllers
 
             if (order == null)
                 return NotFound(new { message = "Order not found." });
-
+            if (order.PaymentStatus != "Paid")
+            {
+                return BadRequest(new { message="Can not confirm unpaid order" });
+            }
             order.IsFinished = true;
 
             await _context.SaveChangesAsync();

@@ -108,6 +108,14 @@ updateDots();
 //Log in
 if (!localStorage.getItem('authToken')) {
     document.querySelector(".primary-menu ul").insertAdjacentHTML(`beforeend`, `<li><a href="login.html">Login</a></li>`);
+} else {
+    document.querySelector(".primary-menu ul").insertAdjacentHTML(`beforeend`, `<li><a href="#" id="logout-btn">Logout</a></li>`);
+
+    document.getElementById('logout-btn').addEventListener('click', (e) => {
+        e.preventDefault();
+        localStorage.removeItem('authToken');
+        window.location.reload();
+    });
 }
 
 //Primary menu

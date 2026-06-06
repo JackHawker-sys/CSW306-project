@@ -88,6 +88,8 @@ confirmYes.addEventListener('click', async () => {
     confirmModal.classList.remove('show');
     if (currentAction === 'complete' && currentOrderIdForAction) {
         await confirmOrder(currentOrderIdForAction);
+    } else if (currentAction === 'finish' && currentOrderIdForAction) {
+        await finishOrder(currentOrderIdForAction);
     } else if (currentAction === 'deny' && currentOrderIdForAction) {
         await denyOrder(currentOrderIdForAction);
     }
@@ -143,15 +145,15 @@ function renderOrdersTable() {
             filteredOrders = allOrders.filter(o =>
                 !o.isFinished &&
                 o.paymentStatus !== 'Paid' &&
-                o.paymentStatus !== 'Cancelled' &&
+                o.paymentStatus !== 'Suspended' &&
                 o.details?.some(d => d.status !== 'Completed' && d.status !== 'Cancelled')
             );
             break;
         case 'completed':
-            filteredOrders = allOrders.filter(o => o.isFinished && o.paymentStatus === 'Paid');
+            filteredOrders = allOrders.filter(o => o.paymentStatus === 'Paid');
             break;
-        case 'cancelled':
-            filteredOrders = allOrders.filter(o => o.paymentStatus === 'Cancelled');
+        case 'suspended':
+            filteredOrders = allOrders.filter(o => o.paymentStatus === 'Suspended');
             break;
         default:
             break;
@@ -163,16 +165,19 @@ function renderOrdersTable() {
     }
 
     ordersTableBody.innerHTML = filteredOrders.map(order => {
-        // Kiểm tra tất cả món đã Ready chưa
-        const allItemsReady = order.details?.length > 0 &&
-            order.details.every(d => d.status === 'Ready' || d.status === 'Completed');
-
         const hasPendingOrProcessing = order.details?.some(d =>
             d.status === 'Pending' || d.status === 'Processing'
         );
 
-        const canConfirm = allItemsReady && !order.isFinished && order.paymentStatus !== 'Paid';
-        const canDeny = hasPendingOrProcessing && !order.isFinished && order.paymentStatus !== 'Paid';
+        // Tất cả items đã Completed hoặc Cancelled
+        const allItemsDone = order.details?.length > 0 &&
+            order.details.every(d => d.status === 'Completed' || d.status === 'Cancelled');
+
+        // Finish: khách đã Paid + tất cả items xong + order chưa finish
+        const canFinish = allItemsDone && order.paymentStatus === 'Paid' && !order.isFinished;
+
+        // Cancel: còn item đang xử lý, chưa finish
+        const canDeny = hasPendingOrProcessing && !order.isFinished;
 
         return `
             <tr>
@@ -190,9 +195,9 @@ function renderOrdersTable() {
                     <button class="action-btn btn-view" onclick="viewOrderDetails(${order.orderId})">
                         <i class="fa-solid fa-eye"></i> View
                     </button>
-                    ${canConfirm ? `
-                        <button class="action-btn btn-complete" onclick="openConfirmModal(${order.orderId}, 'complete')">
-                            <i class="fa-solid fa-check-double"></i> Confirm & Pay
+                    ${canFinish ? `
+                        <button class="action-btn btn-complete" onclick="openConfirmModal(${order.orderId}, 'finish')">
+                            <i class="fa-solid fa-flag-checkered"></i> Finish
                         </button>
                     ` : ''}
                     ${canDeny ? `
@@ -208,13 +213,13 @@ function renderOrdersTable() {
 
 function getOrderStatusText(order) {
     if (order.isFinished && order.paymentStatus === 'Paid') return 'Completed';
+    if (order.paymentStatus === 'Suspended') return 'Suspended';
     if (order.paymentStatus === 'Cancelled') return 'Cancelled';
-    if (order.paymentStatus === 'Paid') return 'Paid';
+    if (order.paymentStatus === 'Paid') return 'Paid – Awaiting Confirmation';
 
     if (order.details) {
-        const hasReady = order.details.some(d => d.status === 'Ready');
-        const allReady = order.details.every(d => d.status === 'Ready');
-        if (allReady && hasReady) return 'Ready for Payment';
+        const allDone = order.details.every(d => d.status === 'Completed' || d.status === 'Cancelled');
+        if (allDone && order.details.length > 0) return 'All Items Done';
 
         const hasProcessing = order.details.some(d => d.status === 'Processing');
         if (hasProcessing) return 'Processing';
@@ -227,13 +232,43 @@ function getOrderStatusText(order) {
 
 function getStatusClass(order) {
     if (order.isFinished && order.paymentStatus === 'Paid') return 'status-completed';
+    if (order.paymentStatus === 'Suspended') return 'status-cancelled';
     if (order.paymentStatus === 'Cancelled') return 'status-cancelled';
-    if (order.paymentStatus === 'Paid') return 'status-completed';
-    if (order.details?.some(d => d.status === 'Ready')) return 'status-processing';
+    if (order.paymentStatus === 'Paid') return 'status-ready';
+    const allDone = order.details?.length > 0 &&
+        order.details.every(d => d.status === 'Completed' || d.status === 'Cancelled');
+    if (allDone) return 'status-ready';
     return 'status-processing';
 }
 
 async function confirmOrder(orderId) {
+    try {
+        const res = await fetch(`${API_BASE}/api/order/${orderId}/status`, {
+            method: 'PUT',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ paymentStatus: 'Paid' })
+        });
+
+        if (!res.ok) {
+            const error = await res.json();
+            throw new Error(error.message || 'Cannot confirm payment');
+        }
+
+        const result = await res.json();
+        showToast(result.message);
+        await loadOrders();
+        await loadRevenue();
+
+    } catch (error) {
+        console.error('Confirm order error:', error);
+        showToast(error.message, 'error');
+    }
+}
+
+async function finishOrder(orderId) {
     try {
         const res = await fetch(`${API_BASE}/api/order/${orderId}/confirm`, {
             method: 'PUT',
@@ -245,16 +280,15 @@ async function confirmOrder(orderId) {
 
         if (!res.ok) {
             const error = await res.json();
-            throw new Error(error.message || 'Cannot confirm order');
+            throw new Error(error.message || 'Cannot finish order');
         }
 
         const result = await res.json();
         showToast(result.message);
         await loadOrders();
-        await loadRevenue();
 
     } catch (error) {
-        console.error('Confirm order error:', error);
+        console.error('Finish order error:', error);
         showToast(error.message, 'error');
     }
 }
@@ -399,9 +433,11 @@ window.closeDetailModal = function () {
 function openConfirmModal(orderId, action) {
     currentOrderIdForAction = orderId;
     currentAction = action;
-    confirmMessage.textContent = action === 'complete'
-        ? `Are you sure you want to confirm order #${orderId}? This will mark all ready items as completed and charge the customer.`
-        : `Are you sure you want to cancel order #${orderId}? This cannot be undone.`;
+    confirmMessage.textContent = action === 'finish'
+        ? `Mark order #${orderId} as finished? All items must be Completed or Cancelled.`
+        : action === 'complete'
+            ? `Confirm payment for order #${orderId}? This will mark the order as Paid.`
+            : `Cancel order #${orderId}? This cannot be undone.`;
     confirmModal.classList.add('show');
 }
 
