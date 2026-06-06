@@ -80,6 +80,8 @@ class CartManager {
 
 const cartManager = new CartManager();
 
+let _getCurrentOrderId = null;
+
 // ─── Shared Helpers ───────────────────────────────────────────────────────────
 function escapeHtml(str) {
     if (!str) return '';
@@ -140,13 +142,28 @@ function renderCartSidebar() {
                 <p>Your cart is empty</p>
             </div>
         `;
-        if (footer) footer.style.display = 'none';
+
+        // Nếu đang có order chạy → hiện nút Proceed to Checkout
+        const activeOrderId = typeof _getCurrentOrderId === 'function' ? _getCurrentOrderId() : null;
+        if (footer && activeOrderId) {
+            footer.style.display = 'block';
+            const totalEl = document.getElementById('cartTotal');
+            if (totalEl) totalEl.textContent = '';
+            const btn = document.getElementById('checkoutBtn');
+            if (btn) btn.textContent = 'Proceed to Checkout';
+        } else {
+            if (footer) footer.style.display = 'none';
+        }
         return;
+        // if (footer) footer.style.display = 'none';
+        // return;
     }
 
     if (footer) footer.style.display = 'block';
     const totalEl = document.getElementById('cartTotal');
     if (totalEl) totalEl.textContent = `$${cartManager.getTotalPrice().toFixed(2)}`;
+    const checkoutBtnEl = document.getElementById('checkoutBtn');
+    if (checkoutBtnEl) checkoutBtnEl.textContent = 'Order';
 
     container.innerHTML = items.map(item => `
         <div class="cart-item" data-food-id="${item.foodId}">
@@ -191,6 +208,8 @@ function renderCartSidebar() {
  * @param {function} options.onOrderClosed         - callback khi order bị đóng bất ngờ (status 400 finished)
  */
 function initCartUI({ getCurrentOrderId, onOrderClosed } = {}) {
+    _getCurrentOrderId = getCurrentOrderId || null;
+
     const cartIcon = document.getElementById('cartIcon');
     const cartSidebar = document.getElementById('cartSidebar');
     const cartOverlay = document.getElementById('cartOverlay');
@@ -218,7 +237,11 @@ function initCartUI({ getCurrentOrderId, onOrderClosed } = {}) {
     if (checkoutBtn) {
         checkoutBtn.addEventListener('click', async () => {
             const items = cartManager.getItems();
-            if (items.length === 0) return;
+            if (items.length === 0) {
+                const activeOrderId = typeof getCurrentOrderId === 'function' ? getCurrentOrderId() : null;
+                if (activeOrderId) window.location.href = 'checkout.html';
+                return;
+            }
 
             const currentOrderId = typeof getCurrentOrderId === 'function' ? getCurrentOrderId() : null;
             if (!currentOrderId) {
@@ -268,7 +291,6 @@ function initCartUI({ getCurrentOrderId, onOrderClosed } = {}) {
                 showToast(`${err.message}`, 'error');
             } finally {
                 checkoutBtn.disabled = false;
-                checkoutBtn.textContent = 'Order';
             }
         });
     }
