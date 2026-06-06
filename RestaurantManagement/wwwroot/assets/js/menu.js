@@ -1,6 +1,7 @@
-﻿const API_BASE = 'https://localhost:7037';
+﻿// Requires: cart.js (CartManager, initCartUI, showToast, escapeHtml, fetchCurrentOrderId)
+
 const API_URL = `${API_BASE}/api/FoodMenu`;
-const ORDER_URL = `${API_BASE}/api/Order`
+const ORDER_URL = `${API_BASE}/api/Order`;
 const IMG_BASE = API_BASE;
 
 let allItems = [];
@@ -23,7 +24,7 @@ const modalName = document.getElementById('modalName');
 const modalPrice = document.getElementById('modalPrice');
 const modalDesc = document.getElementById('modalDesc');
 
-// ─── Init ──────────────────────────────────────────────────────────────────────
+// ─── Init ─────────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
     modalInstance = new bootstrap.Modal(foodModal);
     loadMenu();
@@ -39,8 +40,14 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Khởi tạo cart UI
-    initCartUI();
+    initCartUI({
+        getCurrentOrderId: () => currentOrderId,
+        onOrderClosed: () => {
+            currentOrderId = null;
+            setOrderBtn('start', 'Start ordering');
+        }
+    });
+
     initOrderButton();
 });
 
@@ -51,39 +58,26 @@ async function initOrderButton() {
     if (!btn) return;
 
     if (!token) {
-        btn.style.display = 'none'; // ẩn hẳn nếu chưa login
+        btn.style.display = 'none';
         return;
     }
-    btn.style.display = 'inline-flex'; // hiện ra khi đã login
+
+    btn.style.display = 'inline-flex';
     btn.disabled = true;
     btn.textContent = 'Đang kiểm tra...';
 
-    try {
-        const res = await fetch(`${ORDER_URL}/isOrder`, {
-            headers: { 'Authorization': `Bearer ${token}` }
-        });
+    currentOrderId = await fetchCurrentOrderId();
 
-        if (!res.ok) throw new Error();
-
-        const data = await res.json();
-
-        if (data.hasOrder) {
-            currentOrderId = data.orderId;
-            setOrderBtn('active', `Ordering #${currentOrderId}`);
-        }
-        else {
-            setOrderBtn('start', `Start ordering`);
-        }
-    } catch {
-        btn.textContent = `Checking Fail`;
-        btn.disabled = true;
+    if (currentOrderId) {
+        setOrderBtn('active', `Ordering #${currentOrderId}`);
+    } else {
+        setOrderBtn('start', 'Start ordering');
     }
 }
 
 function setOrderBtn(state, label) {
     const btn = document.getElementById('orderActionBtn');
-    if (!btn)
-        return;
+    if (!btn) return;
 
     btn.classList.remove('btn-start-order', 'btn-active-order');
     btn.disabled = false;
@@ -134,10 +128,9 @@ async function handleStartOrder() {
         showToast('Starting new Order!');
     } catch (err) {
         showToast(`${err.message}`, 'error');
-        setOrderBtn('start', 'Start ordering')
+        setOrderBtn('start', 'Start ordering');
     }
 }
-
 
 // ─── Fetch menu từ API ────────────────────────────────────────────────────────
 async function loadMenu() {
@@ -180,10 +173,8 @@ function renderCards(items) {
     }
 
     showState('grid');
-
     items.forEach((food, i) => {
-        const card = createCard(food, i);
-        menuGrid.appendChild(card);
+        menuGrid.appendChild(createCard(food, i));
     });
 }
 
@@ -216,9 +207,7 @@ function createCard(food, index) {
             <button class="card-footer-btn view-detail-btn">View Details</button>
         </div>`;
 
-    // Xử lý nút View Details
-    const viewBtn = wrapper.querySelector('.view-detail-btn');
-    viewBtn.addEventListener('click', (e) => {
+    wrapper.querySelector('.view-detail-btn').addEventListener('click', (e) => {
         e.stopPropagation();
         openModal(food);
     });
@@ -241,7 +230,6 @@ function openModal(food) {
         if (modalImg.parentElement) modalImg.parentElement.style.display = 'none';
     }
 
-    // Cập nhật nút Order trong modal
     setTimeout(() => {
         const orderBtn = document.querySelector('.modal-order-btn');
         if (orderBtn) {
@@ -258,203 +246,15 @@ function openModal(food) {
     modalInstance.show();
 }
 
-// ─── Giỏ hàng ────────────────────────────────────────────────────────────────
+// ─── Giỏ hàng ─────────────────────────────────────────────────────────────────
 function addToCartAndNotify(food) {
     if (typeof cartManager !== 'undefined' && cartManager) {
         cartManager.addItem(food);
         showToast(`✓ ${food.name} added to cart`);
     } else {
         console.error('Cart manager not loaded');
-        showToast(`⚠️ Cannot add item. Please refresh the page.`, 'error');
+        showToast('⚠️ Cannot add item. Please refresh the page.', 'error');
     }
-}
-
-function showToast(message, type = 'success') {
-    const toast = document.createElement('div');
-    toast.textContent = message;
-    toast.style.cssText = `
-        position: fixed;
-        bottom: 140px;
-        right: 90px;
-        background: ${type === 'error' ? '#dc3545' : 'var(--dark-green, #006400)'};
-        color: var(--main-yellow, #FFD700);
-        padding: 10px 20px;
-        border-radius: 30px;
-        z-index: 1002;
-        font-size: 14px;
-        font-weight: 500;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-        animation: fadeOut 2s forwards;
-    `;
-    document.body.appendChild(toast);
-    setTimeout(() => toast.remove(), 2000);
-}
-
-// ─── Cart UI ─────────────────────────────────────────────────────────────────
-function initCartUI() {
-    const cartIcon = document.getElementById('cartIcon');
-    const cartSidebar = document.getElementById('cartSidebar');
-    const cartOverlay = document.getElementById('cartOverlay');
-    const closeCartBtn = document.getElementById('closeCartBtn');
-    const checkoutBtn = document.getElementById('checkoutBtn');
-
-    if (!cartIcon || !cartSidebar) return;
-
-    // Mở sidebar
-    cartIcon.addEventListener('click', () => {
-        cartSidebar.classList.add('open');
-        if (cartOverlay) cartOverlay.classList.add('show');
-        renderCartSidebar();
-    });
-
-    // Đóng sidebar
-    const closeCart = () => {
-        cartSidebar.classList.remove('open');
-        if (cartOverlay) cartOverlay.classList.remove('show');
-    };
-    if (closeCartBtn) closeCartBtn.addEventListener('click', closeCart);
-    if (cartOverlay) cartOverlay.addEventListener('click', closeCart);
-
-    // Thanh toán
-    if (checkoutBtn) {
-        checkoutBtn.addEventListener('click', async () => {
-            if (typeof cartManager === 'undefined') return;
-            const items = cartManager.getItems();
-            if (items.length === 0) return;
-
-            if (!currentOrderId) {
-                showToast('You did not have any order yet. Click "Start ordering" first', 'error');
-                return;
-            }
-
-            const token = localStorage.getItem('authToken');
-            if (!token) {
-                showToast('Please login first.', 'error');
-                return;
-            }
-
-            checkoutBtn.disabled = true;
-            checkoutBtn.textContent = 'Sending...';
-
-            try {
-                const res = await fetch(`${API_BASE}/api/OrderDetail`, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        items: items.map(item => ({
-                            foodId: item.foodId,
-                            quantity: item.quantity
-                        }))
-                    })
-                });;
-
-                const data = await res.json();
-
-                if (!res.ok) {
-                    // Order bị finished bất ngờ (Admin đã đóng)
-                    if (res.status === 400 && data.message?.includes('finished')) {
-                        currentOrderId = null;
-                        setOrderBtn('start', 'Bắt đầu gọi món');
-                        showToast('⚠️ Order đã bị đóng. Vui lòng tạo order mới.', 'error');
-                        return;
-                    }
-
-                    throw new Error(data.message || 'Can not send Order.');
-                }
-                // Thành công — giữ currentOrderId vì order vẫn active
-                cartManager.clearCart();
-                showToast(`Ordered ${data.items.length} dishes successfully`);
-
-            } catch (err) {
-                showToast(`${err.message}`, 'error');
-            } finally {
-                checkoutBtn.disabled = false;
-                checkoutBtn.textContent = 'Order';
-            }
-        });
-    }
-
-    // Cập nhật badge khi cart thay đổi
-    if (typeof cartManager !== 'undefined') {
-        cartManager.addUpdateListener(() => {
-            updateCartBadge();
-            renderCartSidebar();
-        });
-    }
-
-    updateCartBadge();
-}
-
-function updateCartBadge() {
-    const badge = document.getElementById('cartBadge');
-    if (badge && typeof cartManager !== 'undefined') {
-        const total = cartManager.getTotalItems();
-        badge.textContent = total;
-        badge.style.display = total > 0 ? 'flex' : 'none';
-    }
-}
-
-function renderCartSidebar() {
-    const container = document.getElementById('cartItems');
-    const footer = document.getElementById('cartFooter');
-
-    if (!container || typeof cartManager === 'undefined') return;
-
-    const items = cartManager.getItems();
-
-    if (items.length === 0) {
-        container.innerHTML = `
-            <div class="empty-cart">
-                <i class="fa-solid fa-basket-shopping"></i>
-                <p>Your cart is empty</p>
-            </div>
-        `;
-        if (footer) footer.style.display = 'none';
-        return;
-    }
-
-    if (footer) footer.style.display = 'block';
-    const totalEl = document.getElementById('cartTotal');
-    if (totalEl) totalEl.textContent = `$${cartManager.getTotalPrice().toFixed(2)}`;
-
-    container.innerHTML = items.map(item => `
-        <div class="cart-item" data-food-id="${item.foodId}">
-            <div class="cart-item-info">
-                <div class="cart-item-name">${escapeHtml(item.name)}</div>
-                <div class="cart-item-price">$${Number(item.price).toFixed(2)}</div>
-            </div>
-            <div class="cart-item-controls">
-                <button class="cart-decr">-</button>
-                <span class="cart-item-quantity">${item.quantity}</span>
-                <button class="cart-incr">+</button>
-                <button class="remove-item">🗑️</button>
-            </div>
-            <div class="cart-item-subtotal">$${(item.price * item.quantity).toFixed(2)}</div>
-        </div>
-    `).join('');
-
-    // Gắn sự kiện
-    document.querySelectorAll('.cart-incr').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const foodId = parseInt(btn.closest('.cart-item').dataset.foodId);
-            if (typeof cartManager !== 'undefined') cartManager.updateQuantity(foodId, 1);
-        });
-    });
-    document.querySelectorAll('.cart-decr').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const foodId = parseInt(btn.closest('.cart-item').dataset.foodId);
-            if (typeof cartManager !== 'undefined') cartManager.updateQuantity(foodId, -1);
-        });
-    });
-    document.querySelectorAll('.remove-item').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const foodId = parseInt(btn.closest('.cart-item').dataset.foodId);
-            if (typeof cartManager !== 'undefined') cartManager.removeItem(foodId);
-        });
-    });
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -468,16 +268,8 @@ function showState(state) {
 function formatPrice(price) {
     if (price == null) return '';
     const num = Number(price);
-    // Nếu price là số nguyên (40000) thì hiển thị không có .00
     if (num % 1 === 0) {
         return `$${num.toLocaleString('en-US')} / Person`;
     }
     return `$${num.toFixed(2)} / Person`;
-}
-
-function escapeHtml(str) {
-    if (!str) return '';
-    const d = document.createElement('div');
-    d.appendChild(document.createTextNode(str));
-    return d.innerHTML;
 }
