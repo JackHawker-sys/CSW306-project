@@ -1,58 +1,114 @@
-﻿const API_BASE = 'https://localhost:7037';
-const CHECKOUT_CART_KEY = 'checkout_cart';
+﻿const CHECKOUT_CART_KEY = 'checkout_cart';
 
-let orderItems = [];
 let isProcessing = false;
 let currentOrderId = null;
 
 document.addEventListener('DOMContentLoaded', () => {
-    loadOrderFromCart();
+    loadOrderFromServer();
     setupPaymentOptions();
     document.getElementById('payBtn').addEventListener('click', processPayment);
 });
 
-function loadOrderFromCart() {
-    const savedCart = sessionStorage.getItem(CHECKOUT_CART_KEY);
-
-    if (!savedCart) {
-        showError('No items in cart. Please go back and add items.');
+// Lấy order hiện tại từ server rồi render — không đọc sessionStorage
+async function loadOrderFromServer() {
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+        showPageError('Please login to continue.');
+        setTimeout(() => { window.location.href = 'login.html'; }, 1500);
         return;
     }
 
     try {
-        orderItems = JSON.parse(savedCart);
-        if (orderItems.length === 0) {
-            showError('Your cart is empty.');
+        // Bước 1: lấy orderId đang active
+        const orderId = await fetchCurrentOrderId(token);
+        if (!orderId) {
+            showPageError('No active order found. Please go back and add items.');
             return;
         }
-        renderOrderSummary();
+        currentOrderId = orderId;
+
+        // Bước 2: lấy chi tiết order
+        const order = await fetchOrderDetails(token, orderId);
+        if (!order.items || order.items.length === 0) {
+            showPageError('Your order has no items.');
+            return;
+        }
+
+        renderOrderSummary(order);
+
         document.getElementById('loadingState').style.display = 'none';
         document.getElementById('checkoutContent').style.display = 'grid';
-    } catch (e) {
-        showError('Invalid cart data.');
+
+    } catch (err) {
+        showPageError(err.message || 'Cannot load order.');
     }
 }
 
-function renderOrderSummary() {
+function renderOrderSummary(order) {
     const container = document.getElementById('orderItems');
-    let total = 0;
 
-    container.innerHTML = orderItems.map(item => {
-        const subtotal = item.price * item.quantity;
-        total += subtotal;
+    container.innerHTML = order.items.map(item => {
+        const statusClass = (item.status || 'pending').toLowerCase();
+        const isPending = statusClass === 'pending';
+
+        const quantityControl = isPending
+            ? `<div class="qty-control">
+                   <button class="qty-btn" onclick="changeQuantity(${item.orderDetailId}, ${item.quantity - 1})">−</button>
+                   <span class="qty-value">x${item.quantity}</span>
+                   <button class="qty-btn" onclick="changeQuantity(${item.orderDetailId}, ${item.quantity + 1})">+</button>
+               </div>`
+            : `<div class="checkout-item-quantity">x${item.quantity}</div>`;
+
         return `
-            <div class="checkout-item">
+            <div class="checkout-item" id="item-${item.orderDetailId}">
                 <div class="checkout-item-info">
-                    <div class="checkout-item-name">${escapeHtml(item.name)}</div>
-                    <div class="checkout-item-price">${formatCurrencyUSD(item.price)}</div>
+                    <div class="checkout-item-name">
+                        ${escapeHtml(item.foodName)}
+                        <span class="status-badge status-${statusClass}">${item.status || 'Pending'}</span>
+                    </div>
+                    <div class="checkout-item-price">${formatCurrencyUSD(item.unitPrice)}</div>
                 </div>
-                <div class="checkout-item-quantity">x${item.quantity}</div>
-                <div class="checkout-item-subtotal">${formatCurrencyUSD(subtotal)}</div>
+                ${quantityControl}
+                <div class="checkout-item-subtotal" id="subtotal-${item.orderDetailId}">
+                    ${formatCurrencyUSD(item.subtotal)}
+                </div>
             </div>
         `;
     }).join('');
 
-    document.getElementById('orderTotal').textContent = formatCurrencyUSD(total);
+    document.getElementById('orderTotal').textContent = formatCurrencyUSD(order.totalAmount);
+}
+
+//Kiểm tra số lượng
+async function changeQuantity(orderDetailId, newQty) {
+    if (newQty < 1) return; // không cho về 0
+
+    const token = localStorage.getItem('authToken');
+    try {
+        const res = await fetch(`${API_BASE}/api/OrderDetail/${orderDetailId}/quantity`, {
+            method: 'PATCH',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ quantity: newQty })
+        });
+
+        if (!res.ok) {
+            const err = await res.json();
+            alert(err.message || 'Cannot update quantity.');
+            return;
+        }
+
+        const result = await res.json();
+
+        // Reload lại order để cập nhật total
+        const order = await fetchOrderDetails(token, currentOrderId);
+        renderOrderSummary(order);
+
+    } catch (err) {
+        alert('Error updating quantity.');
+    }
 }
 
 function setupPaymentOptions() {
@@ -68,14 +124,11 @@ function setupPaymentOptions() {
 }
 
 async function processPayment() {
-    if (isProcessing) return;
+    if (isProcessing || !currentOrderId) return;
 
     const token = localStorage.getItem('authToken');
     if (!token) {
-        showError('Please login to continue');
-        setTimeout(() => {
-            window.location.href = 'login.html';
-        }, 1500);
+        showError('Please login to continue.');
         return;
     }
 
@@ -85,28 +138,29 @@ async function processPayment() {
     payBtn.innerHTML = '<span class="spinner-custom" style="width:20px;height:20px;margin-right:10px;"></span> Processing...';
 
     try {
-        const userInfo = await fetchUserInfo(token);
-        if (!userInfo) throw new Error('Cannot get user information');
+        // PUT /api/order/{id}/status → Paid
+        const res = await fetch(`${API_BASE}/api/order/${currentOrderId}/status`, {
+            method: 'PUT',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ paymentStatus: 'Paid' })
+        });
 
-        // BƯỚC 1: Tạo Order MỚI (không dùng order cũ)
-        currentOrderId = await createNewOrder(token);
-        console.log(`Created new order: ${currentOrderId}`);
+        const result = await res.json();
 
-        // BƯỚC 2: Tạo OrderDetail mới (mặc định status = "Pending")
-        const createdDetails = await createOrderDetails(token, currentOrderId, orderItems);
-
-        if (!createdDetails || createdDetails.length === 0) {
-            throw new Error('No items were added to the order');
+        if (!res.ok) {
+            throw new Error(result.message || `Payment failed (${res.status})`);
         }
 
-        // BƯỚC 3: Lấy thông tin Order để hiển thị receipt
-        const fullOrder = await fetchOrderDetails(token, currentOrderId);
+        // Lấy lại order để hiển thị receipt
+        const order = await fetchOrderDetails(token, currentOrderId);
 
-        // BƯỚC 4: Xóa dữ liệu giỏ hàng
-        clearAllCartData();
+        // Xóa sessionStorage cart (nếu còn)
+        sessionStorage.removeItem(CHECKOUT_CART_KEY);
 
-        // BƯỚC 5: Hiển thị receipt
-        showReceipt(fullOrder, createdDetails);
+        showReceipt(order);
 
     } catch (error) {
         console.error('Payment error:', error);
@@ -118,135 +172,45 @@ async function processPayment() {
     }
 }
 
-// Tạo order MỚI - không tìm kiếm order cũ
-async function createNewOrder(token) {
-    const createRes = await fetch(`${API_BASE}/api/order`, {
-        method: 'POST',
-        headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-        }
+async function fetchCurrentOrderId(token) {
+    const res = await fetch(`${API_BASE}/api/Order/isOrder`, {
+        headers: { 'Authorization': `Bearer ${token}` }
     });
-
-    if (!createRes.ok) {
-        const error = await createRes.text();
-        throw new Error(`Cannot create order: ${error}`);
-    }
-
-    const result = await createRes.json();
-    return result.orderId;
-}
-
-async function createOrderDetails(token, orderId, items) {
-    const createdDetails = [];
-
-    for (const item of items) {
-        const payload = {
-            orderId: orderId,
-            items: [{ foodId: item.foodId, quantity: item.quantity }]
-        };
-
-        const createRes = await fetch(`${API_BASE}/api/OrderDetail`, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(payload)
-        });
-
-        if (!createRes.ok) {
-            const errorText = await createRes.text();
-            console.error(`Failed to add item ${item.name}:`, errorText);
-            throw new Error(`Cannot add item ${item.name} to order`);
-        }
-
-        const result = await createRes.json();
-
-        if (result.items && result.items.length > 0) {
-            for (const detail of result.items) {
-                createdDetails.push({
-                    orderDetailId: detail.orderDetailId,
-                    foodName: detail.foodName || item.name,
-                    quantity: detail.quantity,
-                    unitPrice: detail.unitPrice,
-                    subtotal: detail.subtotal || (detail.unitPrice * detail.quantity),
-                    status: detail.status || 'Pending'
-                });
-            }
-        }
-    }
-
-    if (createdDetails.length === 0) {
-        throw new Error('No items were added to the order');
-    }
-
-    return createdDetails;
-}
-
-function clearAllCartData() {
-    localStorage.removeItem('restaurant_cart');
-    sessionStorage.removeItem(CHECKOUT_CART_KEY);
-    if (typeof cartManager !== 'undefined' && cartManager) {
-        cartManager.items = [];
-        cartManager.saveCart();
-    }
-    orderItems = [];
-}
-
-async function fetchUserInfo(token) {
-    try {
-        const res = await fetch(`${API_BASE}/api/User/me`, {
-            headers: { 'Authorization': `Bearer ${token}` }
-        });
-        if (!res.ok) throw new Error('Unauthorized');
-        return await res.json();
-    } catch (e) {
-        console.error('Fetch user error:', e);
-        return null;
-    }
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data.hasOrder ? data.orderId : null;
 }
 
 async function fetchOrderDetails(token, orderId) {
     const res = await fetch(`${API_BASE}/api/order/${orderId}`, {
         headers: { 'Authorization': `Bearer ${token}` }
     });
-
-    if (!res.ok) throw new Error('Cannot fetch order details');
+    if (!res.ok) throw new Error('Cannot fetch order details.');
     return await res.json();
 }
 
-function showReceipt(order, createdDetails) {
+function showReceipt(order) {
     const receiptBody = document.getElementById('receiptBody');
 
-    let total = 0;
-    let itemsHtml = '';
-
-    if (createdDetails && createdDetails.length > 0) {
-        itemsHtml = createdDetails.map(detail => {
-            const subtotal = detail.subtotal || (detail.unitPrice * detail.quantity);
-            total += subtotal;
-            return `
-                <div class="receipt-item">
-                    <span>${escapeHtml(detail.foodName)} x ${detail.quantity}</span>
-                    <span>${formatCurrencyUSD(subtotal)}</span>
-                    <span class="status-badge status-pending" style="margin-left: 10px;">${detail.status || 'Pending'}</span>
-                </div>
-            `;
-        }).join('');
-    }
+    const itemsHtml = (order.items || []).map(item => `
+        <div class="receipt-item">
+            <span>${escapeHtml(item.foodName)} x ${item.quantity}</span>
+            <span>${formatCurrencyUSD(item.subtotal)}</span>
+            <span class="status-badge status-${item.status?.toLowerCase()}" style="margin-left:10px;">${item.status}</span>
+        </div>
+    `).join('');
 
     receiptBody.innerHTML = `
         <div class="receipt-items">
-            ${itemsHtml || '<p>No items in order.</p>'}
+            ${itemsHtml || '<p>No items.</p>'}
         </div>
         <div class="receipt-total">
             <span>Total:</span>
-            <span>${formatCurrencyUSD(total)}</span>
+            <span>${formatCurrencyUSD(order.totalAmount)}</span>
         </div>
-        <p style="margin-top: 15px; color: #666; font-size: 13px;">
-            <i class="fa-regular fa-clock"></i> Order #${order.orderId || currentOrderId || 'N/A'}<br>
-            <i class="fa-regular fa-hourglass-half"></i> Status: Pending (waiting for chef)<br>
+        <p style="margin-top:15px; color:#666; font-size:13px;">
+            <i class="fa-regular fa-clock"></i> Order #${order.orderId}<br>
+            <i class="fa-solid fa-circle-check" style="color:green;"></i> Payment: ${order.paymentStatus}<br>
             Thank you for your order!
         </p>
     `;
@@ -255,23 +219,26 @@ function showReceipt(order, createdDetails) {
 }
 
 function closeReceipt() {
-    const modal = document.getElementById('receiptModal');
-    modal.classList.remove('show');
+    document.getElementById('receiptModal').classList.remove('show');
     window.location.href = 'menu.html';
 }
 
-function showError(message) {
-    document.getElementById('loadingState').style.display = 'none';
-    document.getElementById('errorState').style.display = 'block';
-    document.getElementById('errorMsg').textContent = message;
+function showPageError(message) {
+    document.getElementById("loadingState").style.display = "none";
+    document.getElementById("pageErrorState").style.display = "block";
+    document.getElementById("pageErrorMsg").textContent = message;
 }
 
-// Format currency as USD
+function showError(message) {
+    const errorState = document.getElementById('errorState');
+    const errorMsg = document.getElementById('errorMsg');
+    if (errorState) errorState.style.display = 'block';
+    if (errorMsg) errorMsg.textContent = message;
+}
+
 function formatCurrencyUSD(amount) {
     if (amount === undefined || amount === null) return '$0';
-    if (amount % 1 === 0) {
-        return `$${amount.toLocaleString('en-US')}`;
-    }
+    if (amount % 1 === 0) return `$${amount.toLocaleString('en-US')}`;
     return `$${amount.toFixed(2)}`;
 }
 

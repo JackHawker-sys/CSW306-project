@@ -1,81 +1,97 @@
 ﻿<!DOCTYPE html>
 <html>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BD Restaurant - Checkout</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@200..1000&family=Open+Sans:wght@300..800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="./assets/css/checkout.css">
-</head>
-<body>
-    <nav class="checkout-navbar">
-        <div class="navbar-inner">
-            <a href="BDrestaurant.html" class="navbar-brand-link">
-                <img src="./assets/images/logo.png" alt="Logo" class="navbar-logo">
-                <span class="navbar-brand-name">BD Restaurant</span>
-            </a>
-            <a href="menu.html" class="back-btn">
-                <i class="fa-solid fa-arrow-left"></i> Back to Menu
-            </a>
-        </div>
-    </nav>
 
-    <div class="checkout-container">
-        <h1 class="checkout-title"><i class="fa-solid fa-receipt"></i> Checkout</h1>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>BD Restaurant - Checkout</title>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link
+            href="https://fonts.googleapis.com/css2?family=Nunito:wght@200..1000&family=Open+Sans:wght@300..800&display=swap"
+            rel="stylesheet">
+        <link rel="stylesheet" href="./assets/css/checkout.css">
+    </head>
 
-        <div id="loadingState" class="loading-state">
-            <div class="spinner-custom"></div>
-            <p>Loading your order...</p>
-        </div>
+    <body>
+        <nav class="checkout-navbar">
+            <div class="navbar-inner">
+                <a href="BDrestaurant.html" class="navbar-brand-link">
+                    <img src="./assets/images/logo.png" alt="Logo" class="navbar-logo">
+                    <span class="navbar-brand-name">BD Restaurant</span>
+                </a>
+                <a href="menu.html" class="back-btn">
+                    <i class="fa-solid fa-arrow-left"></i> Back to Menu
+                </a>
+            </div>
+        </nav>
 
-        <div id="errorState" class="loading-state" style="display:none;">
-            <i class="fa-solid fa-circle-exclamation" style="font-size: 48px; color: #ff4444;"></i>
-            <p id="errorMsg"></p>
-            <button onclick="location.reload()" class="pay-btn" style="width: auto; padding: 10px 30px;">Retry</button>
-        </div>
+        <div class="checkout-container">
+            <h1 class="checkout-title"><i class="fa-solid fa-receipt"></i> Checkout</h1>
 
-        <div class="checkout-grid" id="checkoutContent" style="display:none;">
-            <div class="order-summary">
-                <h2><i class="fa-solid fa-list"></i> Order Summary</h2>
-                <div class="order-items" id="orderItems"></div>
-                <div class="order-total">
-                    <span>Total Amount:</span>
-                    <span id="orderTotal">$0.00</span>
+            <!-- Loading toàn trang — chỉ hiện khi đang fetch order lần đầu -->
+            <div id="loadingState" class="loading-state">
+                <div class="spinner-custom"></div>
+                <p>Loading your order...</p>
+            </div>
+
+            <div class="checkout-grid" id="checkoutContent" style="display:none;">
+                <div class="order-summary">
+                    <h2><i class="fa-solid fa-list"></i> Order Summary</h2>
+                    <div class="order-items" id="orderItems"></div>
+                    <div class="order-total">
+                        <span>Total Amount:</span>
+                        <span id="orderTotal">$0.00</span>
+                    </div>
+                </div>
+
+                <div class="payment-section">
+                    <h2><i class="fa-solid fa-credit-card"></i> Payment Method</h2>
+                    <div class="payment-methods">
+                        <div class="payment-option selected" data-method="cash">
+                            <input type="radio" name="payment" id="cash" value="cash" checked>
+                            <label for="cash"><i class="fa-solid fa-money-bill"></i> Cash on Delivery</label>
+                        </div>
+                        <div class="payment-option" data-method="card">
+                            <input type="radio" name="payment" id="card" value="card">
+                            <label for="card"><i class="fa-solid fa-credit-card"></i> Credit Card</label>
+                        </div>
+                    </div>
+
+                    <!-- Error nằm trong payment-section, ẩn mặc định -->
+                    <div id="errorState" style="display:none; margin: 16px 0;">
+                        <i class="fa-solid fa-circle-exclamation" style="color:#ff4444; margin-right:6px;"></i>
+                        <span id="errorMsg" style="color:#ff4444; font-size:14px;"></span>
+                    </div>
+
+                    <button class="pay-btn" id="payBtn">
+                        <i class="fa-solid fa-check"></i> Confirm & Pay
+                    </button>
                 </div>
             </div>
 
-            <div class="payment-section">
-                <h2><i class="fa-solid fa-credit-card"></i> Payment Method</h2>
-                <div class="payment-methods">
-                    <div class="payment-option selected" data-method="cash">
-                        <input type="radio" name="payment" id="cash" value="cash" checked>
-                        <label for="cash"><i class="fa-solid fa-money-bill"></i> Cash on Delivery</label>
-                    </div>
-                    <div class="payment-option" data-method="card">
-                        <input type="radio" name="payment" id="card" value="card">
-                        <label for="card"><i class="fa-solid fa-credit-card"></i> Credit Card</label>
-                    </div>
-                </div>
-                <button class="pay-btn" id="payBtn">
-                    <i class="fa-solid fa-check"></i> Confirm & Pay
+            <!-- Error toàn trang — chỉ hiện khi không load được order -->
+            <div id="pageErrorState" class="loading-state" style="display:none;">
+                <i class="fa-solid fa-circle-exclamation" style="font-size: 48px; color: #ff4444;"></i>
+                <p id="pageErrorMsg"></p>
+                <button onclick="location.href='menu.html'" class="pay-btn" style="width: auto; padding: 10px 30px;">
+                    Back to Menu
                 </button>
             </div>
         </div>
-    </div>
 
-    <!-- Receipt Modal -->
-    <div class="receipt-modal" id="receiptModal">
-        <div class="receipt-content">
-            <h3><i class="fa-solid fa-receipt"></i> Payment Receipt</h3>
-            <div id="receiptBody"></div>
-            <button class="close-receipt" onclick="closeReceipt()">Close</button>
+        <!-- Receipt Modal -->
+        <div class="receipt-modal" id="receiptModal">
+            <div class="receipt-content">
+                <h3><i class="fa-solid fa-receipt"></i> Payment Receipt</h3>
+                <div id="receiptBody"></div>
+                <button class="close-receipt" onclick="closeReceipt()">Close</button>
+            </div>
         </div>
-    </div>
 
-    <script src="./assets/js/cart.js"></script>
-    <script src="./assets/js/checkout.js"></script>
-</body>
+        <script src="./assets/js/cart.js"></script>
+        <script src="./assets/js/checkout.js"></script>
+    </body>
+
 </html>
