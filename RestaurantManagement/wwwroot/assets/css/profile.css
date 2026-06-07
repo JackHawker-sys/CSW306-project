@@ -1,0 +1,135 @@
+﻿.profile-section {
+    background-color: #FFFFFF;
+    padding: 60px 20px;
+    min-height: 60vh;
+}
+
+.profile-card {
+    max-width: 600px;
+    margin: 0 auto;
+    background-color: #F2F2F2;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.profile-card-header {
+    background-color: var(--dark-green);
+    padding: 30px 20px;
+    text-align: center;
+}
+
+.profile-avatar {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background-color: var(--main-yellow);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 15px auto;
+    font-size: 40px;
+    color: var(--dark-green);
+}
+
+.profile-card-header h2 {
+    color: var(--main-yellow);
+    font-weight: 800;
+    font-size: 26px;
+    margin: 0;
+}
+
+.profile-card-header p {
+    color: #ccc;
+    margin: 5px 0 0 0;
+    font-size: 14px;
+}
+
+.profile-card-body {
+    padding: 30px;
+}
+
+.profile-field {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 14px 0;
+    border-bottom: 1px solid #ddd;
+}
+
+    .profile-field:last-child {
+        border-bottom: none;
+    }
+
+.profile-field-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: var(--dark-green);
+    color: var(--main-yellow);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 15px;
+}
+
+.profile-field-info label {
+    display: block;
+    font-size: 12px;
+    color: #888;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 2px;
+}
+
+.profile-field-info span {
+    font-size: 16px;
+    color: #333;
+    font-weight: 500;
+}
+
+.profile-loading {
+    text-align: center;
+    padding: 40px;
+    color: #888;
+}
+
+    .profile-loading i {
+        font-size: 30px;
+        color: var(--dark-green);
+        animation: spin 1s linear infinite;
+    }
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.profile-error {
+    text-align: center;
+    padding: 40px;
+    color: #cc0000;
+}
+
+    .profile-error i {
+        font-size: 40px;
+        margin-bottom: 10px;
+        display: block;
+    }
+
+.badge-role {
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 700;
+    background-color: var(--main-yellow);
+    color: var(--dark-green);
+}
