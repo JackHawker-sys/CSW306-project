@@ -4,24 +4,19 @@ const successMessage = document.getElementById('successMessage');
 const loginBtn = document.getElementById('loginBtn');
 const spinner = document.getElementById('spinner');
 const btnText = document.getElementById('btnText');
+const forgotLink = document.getElementById('forgot-link');
 
-// API endpoint configuration (ASP.NET Core backend)
+
+const forgotPasswordEmailForm = document.getElementById('forgotPasswordEmailForm');
+const sendCodeBtn = document.getElementById('sendCodeBtn');
+const spinnerForgot = document.getElementById('spinnerForgot');
+const btnTextForgot = document.getElementById('btnTextForgot');
+const backBtn = document.getElementById('backBtn');
+const headerSubtitle = document.getElementById('headerSubtitle');
+
+// API endpoint configuration (change the URL to match your backend server)
 const API_URL = 'https://localhost:7037/api/auth/login';
-
-// Helper function to decode JWT token
-function parseJwt(token) {
-    try {
-        const base64Url = token.split('.')[1];
-        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-        const jsonPayload = decodeURIComponent(atob(base64).split('').map(function (c) {
-            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-        }).join(''));
-        return JSON.parse(jsonPayload);
-    } catch (e) {
-        console.error('JWT decode error:', e);
-        return null;
-    }
-}
+const EMAIL_VERIFICATION_API = 'https://localhost:7037/api/auth/email-verification';
 
 loginForm.addEventListener('submit', async function (e) {
     e.preventDefault();
@@ -154,5 +149,107 @@ loginForm.addEventListener('submit', async function (e) {
         loginBtn.disabled = false;
         spinner.classList.remove('show');
         btnText.textContent = 'Sign In';
+    }
+});
+
+// Forgot password link handler
+forgotLink.addEventListener('click', function (e) {
+    e.preventDefault();
+    loginForm.style.display = 'none';
+    forgotPasswordEmailForm.style.display = 'block';
+    headerSubtitle.textContent = 'Reset Your Password';
+    errorMessage.style.display = 'none';
+    successMessage.style.display = 'none';
+});
+
+// Back to login button handler
+backBtn.addEventListener('click', function (e) {
+    e.preventDefault();
+    loginForm.style.display = 'block';
+    forgotPasswordEmailForm.style.display = 'none';
+    headerSubtitle.textContent = 'Sign in to continue';
+    errorMessage.style.display = 'none';
+    successMessage.style.display = 'none';
+    forgotPasswordEmailForm.reset();
+});
+
+// Forgot password email form submission
+forgotPasswordEmailForm.addEventListener('submit', async function (e) {
+    e.preventDefault();
+
+    const email = document.getElementById('forgotEmail').value.trim();
+
+    errorMessage.style.display = 'none';
+    successMessage.style.display = 'none';
+
+    // Client-side validation
+    if (!email) {
+        errorMessage.textContent = 'Please enter your email address!';
+        errorMessage.style.display = 'block';
+        return;
+    }
+
+    // Email format validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        errorMessage.textContent = 'Please enter a valid email address!';
+        errorMessage.style.display = 'block';
+        return;
+    }
+
+    // Show loading spinner
+    sendCodeBtn.disabled = true;
+    spinnerForgot.classList.add('show');
+    btnTextForgot.textContent = 'Sending...';
+
+    try {
+        // Call email-verification API
+        const response = await fetch(EMAIL_VERIFICATION_API, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(email)
+        });
+
+        const result = await response.text();
+
+        if (response.ok) {
+            // Success - store email in session storage and show success message
+            sessionStorage.setItem('forgotPasswordEmail', email);
+
+            successMessage.textContent = '✓ Verification code sent to your email! Redirecting...';
+            successMessage.style.display = 'block';
+
+            console.log('Email verification request successful:', email);
+
+            // Redirect to changepassword page after 1 seconds
+            setTimeout(() => {
+                window.location.href = 'changepassword.html';
+            }, 1000);
+        } else {
+            // Error response
+            let errorText = result;
+            try {
+                const jsonResult = JSON.parse(result);
+                errorText = jsonResult.message || result;
+            } catch (e) {
+                // If not JSON, use text as is
+            }
+
+            errorMessage.textContent = errorText || 'Failed to send verification code. Please try again!';
+            errorMessage.style.display = 'block';
+            console.error('Email verification failed:', result);
+        }
+    } catch (error) {
+        // Request error
+        errorMessage.textContent = 'Connection error: ' + error.message + '. Please try again!';
+        errorMessage.style.display = 'block';
+        console.error('API Error:', error);
+    } finally {
+        // Hide loading spinner
+        sendCodeBtn.disabled = false;
+        spinnerForgot.classList.remove('show');
+        btnTextForgot.textContent = 'Send Verification Code';
     }
 });

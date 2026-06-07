@@ -37,7 +37,11 @@
 
             <div class="form-group">
                 <label for="activationCode"><i class="fas fa-key"></i> Activation Code</label>
-                <input type="text" id="activationCode" name="activationCode" placeholder="Enter your activation code" required>
+                <div class="activation-code-group">
+                    <input type="text" id="activationCode" name="activationCode"
+                        placeholder="Enter your activation code" required>
+                    <button type="button" class="resend-btn" id="resendBtn">Resend Code</button>
+                </div>
             </div>
 
             <button type="submit" class="activate-btn" id="activateBtn">

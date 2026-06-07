@@ -60,7 +60,7 @@ namespace RestaurantManagement.Controller
             });
         }
 
-        // Send activecode to email
+        // Gửi activecode tới email
         [HttpPost("send-verification")]
         public async Task<IActionResult> SendVerification([FromBody] string email)
         {
@@ -105,7 +105,7 @@ namespace RestaurantManagement.Controller
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-        // Bắt người dùng nhập email để xác thực xem nó có tồn tại trong cơ sở dữ liệu của hệ thống hay không
+        // Tương tự send-verification nhưng có kiểm tra tính trạng tài khoản (kích hoạt, xóa, khóa)
         [HttpPost("email-verification")]
         public async Task<IActionResult> Forgot([FromBody] string Email)
         {
@@ -128,10 +128,7 @@ namespace RestaurantManagement.Controller
             return Ok("Active code has been sent to your email!");
         }
 
-        // Người dùng kiểm tra email và nhập active code. 
-        // api sẽ kiểm tra xem người dùng có tồn tại không thông qua active code 
-        // sau đấy sẽ kiểm tra password và confirm password xem có match hay không
-        // nếu match thì lưu lại mật khẩu mới vào trong cơ sở dũ liệu cho người dùng. 
+        // Kiểm tra active code và đổi mật khẩu mới, có kiểm tra confirm password
         [HttpPost("forgot-password")]
         public async Task<IActionResult> ForgotPassword([FromBody] ForgotPassword request)
         {
