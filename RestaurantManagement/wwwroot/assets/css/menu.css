@@ -622,7 +622,91 @@ h4 {
     }
 }
 
-/* ── Order Action Button ─────────────────── */
+/* ── Table Input (inline, next to Start ordering btn) ── */
+.table-input-wrapper {
+    display: none;
+    align-items: center;
+    gap: 6px;
+    animation: fadeInUp 0.2s ease both;
+}
+
+.table-input-wrapper.visible {
+    display: inline-flex;
+}
+
+.table-id-input {
+    width: 110px;
+    padding: 8px 14px;
+    border: 2px solid var(--dark-green);
+    border-radius: 30px;
+    font-size: 14px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    color: var(--text-dark);
+    background: #fff;
+    outline: none;
+    transition: border-color 0.25s, box-shadow 0.25s;
+    -moz-appearance: textfield;
+}
+
+.table-id-input::-webkit-outer-spin-button,
+.table-id-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.table-id-input:focus {
+    border-color: var(--dark-green);
+    box-shadow: 0 0 0 3px rgba(0, 100, 0, 0.15);
+}
+
+.table-id-input::placeholder {
+    color: #aaa;
+    font-weight: 400;
+}
+
+.btn-confirm-order,
+.btn-cancel-order {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.btn-confirm-order {
+    background-color: var(--dark-green);
+    color: var(--main-yellow);
+}
+
+.btn-confirm-order:hover {
+    background-color: var(--green-hover);
+    transform: scale(1.08);
+}
+
+.btn-cancel-order {
+    background-color: #f2f2f2;
+    color: #666;
+}
+
+.btn-cancel-order:hover {
+    background-color: #e0e0e0;
+    transform: scale(1.08);
+}
+
+@media (max-width: 480px) {
+    .table-id-input {
+        width: 90px;
+        padding: 7px 12px;
+    }
+}
+
 #orderActionBtn {
     display: inline-flex;
     align-items: center;

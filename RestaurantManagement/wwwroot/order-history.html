@@ -1,96 +1,99 @@
 ﻿<!DOCTYPE html>
 <html>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BD - Order History</title>
-    <link rel="stylesheet" href="./assets/css/BDrestaurant.css">
-    <link rel="stylesheet" href="./assets/css/order-history.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
-</head>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>BD - Order History</title>
+        <link rel="stylesheet" href="./assets/css/BDrestaurant.css">
+        <link rel="stylesheet" href="./assets/css/order-history.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link
+            href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap"
+            rel="stylesheet">
+    </head>
 
-<body>
-    <a href="#top" id="goTop" class="go-top"><i class="fa-solid fa-angle-up"></i></a>
-    <div class="container">
+    <body>
+        <a href="#top" id="goTop" class="go-top"><i class="fa-solid fa-angle-up"></i></a>
+        <div class="container">
 
-        <div class="hamburger" id="hamburger">
-            <span></span>
-            <span></span>
-            <span></span>
-        </div>
-        <div class="overlay" id="overlay"></div>
-        <button class="close-btn" id="close-btn">X</button>
+            <div class="hamburger" id="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <div class="overlay" id="overlay"></div>
+            <button class="close-btn" id="close-btn">X</button>
 
-        <nav class="primary-menu container" id="primary-menu">
-            <ul>
-                <li><a href="BDrestaurant.html">Home</a></li>
-                <li><a href="#">About</a></li>
-                <li><a href="menu.html">Menu</a></li>
-                <li><a href="#">Online Order</a></li>
-                <li class="page">
-                    <p><span>Profile</span> <i class="fa-solid fa-chevron-down"></i></p>
-                    <ul>
-                        <li><a href="profile.html">My Profile</a></li>
-                        <li><a href="order-history.html">Order History</a></li>
-                    </ul>
-                </li>
-                <li><a href="#">Contact</a></li>
-            </ul>
-        </nav>
+            <nav class="primary-menu container" id="primary-menu">
+                <ul>
+                    <li><a href="BDrestaurant.html">Home</a></li>
+                    <li><a href="#">About</a></li>
+                    <li><a href="menu.html">Menu</a></li>
+                    <li><a href="#">Online Order</a></li>
+                    <li class="page">
+                        <p><span>Profile</span> <i class="fa-solid fa-chevron-down"></i></p>
+                        <ul>
+                            <li><a href="profile.html">My Profile</a></li>
+                            <li><a href="order-history.html">Order History</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="#">Contact</a></li>
+                </ul>
+            </nav>
 
-        <main>
-            <section class="history-section">
-                <h1 class="section-title">Order History</h1>
+            <main>
+                <section class="history-section">
+                    <h1 class="section-title">Order History</h1>
 
-                <div id="historyContainer">
-                    <div class="history-loading" id="historyLoading">
-                        <i class="fa-solid fa-circle-notch"></i>
-                        <p>Loading...</p>
+                    <div id="historyContainer">
+                        <div class="history-loading" id="historyLoading">
+                            <i class="fa-solid fa-circle-notch"></i>
+                            <p>Loading...</p>
+                        </div>
+                    </div>
+                </section>
+            </main>
+
+            <footer>
+                <div class="row">
+                    <div class="copyright col-md-6">
+                        <p>© Copyright <span>Your Site Name</span>. All Rights Reserved</p>
+                        <p>Template By <span>CSW 304</span></p>
+                    </div>
+                    <div class="col-md-6">
+                        <p class="footer-info">Get Latest Food Information</p>
+                        <form>
+                            <div class="footer-form">
+                                <div>
+                                    <input type="text" name="footer-email" id="footer-email"
+                                        placeholder="Enter Your Email">
+                                </div>
+                                <div><button type="button" id="footer-btn">Submit</button></div>
+                            </div>
+                            <div class="error" id="f-email-error"></div>
+                        </form>
                     </div>
                 </div>
-            </section>
-        </main>
-
-        <footer>
-            <div class="row">
-                <div class="copyright col-md-6">
-                    <p>© Copyright <span>Your Site Name</span>. All Rights Reserved</p>
-                    <p>Template By <span>CSW 304</span></p>
-                </div>
-                <div class="col-md-6">
-                    <p class="footer-info">Get Latest Food Information</p>
-                    <form>
-                        <div class="footer-form">
-                            <div>
-                                <input type="text" name="footer-email" id="footer-email" placeholder="Enter Your Email">
-                            </div>
-                            <div><button type="button" id="footer-btn">Submit</button></div>
-                        </div>
-                        <div class="error" id="f-email-error"></div>
-                    </form>
-                </div>
-            </div>
-        </footer>
-    </div>
-
-    <!-- Detail Modal -->
-    <div class="detail-modal-overlay" id="detailModal">
-        <div class="detail-modal">
-            <div class="detail-modal-header">
-                <h3><i class="fa-solid fa-receipt"></i> Order Detail</h3>
-                <button class="detail-modal-close" onclick="closeModal()">&times;</button>
-            </div>
-            <div class="detail-modal-body" id="detailModalBody"></div>
+            </footer>
         </div>
-    </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="./assets/js/order-history.js"></script>
-</body>
+        <!-- Detail Modal -->
+        <div class="detail-modal-overlay" id="detailModal">
+            <div class="detail-modal">
+                <div class="detail-modal-header">
+                    <h3><i class="fa-solid fa-receipt"></i> Order Detail</h3>
+                    <button class="detail-modal-close" onclick="closeModal()">&times;</button>
+                </div>
+                <div class="detail-modal-body" id="detailModalBody"></div>
+            </div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="./assets/js/order-history.js"></script>
+    </body>
 
 </html>

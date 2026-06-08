@@ -61,6 +61,7 @@ namespace RestaurantManagement.Controllers
                 .Select(o => new OrderListDto
                 {
                     OrderId = o.OrderId,
+                    TableId = o.TableId,
                     CustomerName = o.User.FullName,
                     OrderDate = o.OrderDate,
                     TotalAmount = o.TotalAmount,
@@ -104,6 +105,7 @@ namespace RestaurantManagement.Controllers
             var result = new OrderDetailResponseDto
             {
                 OrderId = order.OrderId,
+                TableId = order.TableId,
                 CustomerName = order.User.FullName ?? order.User.Username,
                 OrderDate = order.OrderDate,
                 TotalAmount = order.TotalAmount,
@@ -149,7 +151,7 @@ namespace RestaurantManagement.Controllers
         // Log sẽ được tạo bởi OrderDetailsController khi POST items.
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> Create()
+        public async Task<IActionResult> Create([FromBody] CreateOrderDto dto)
         {
             var UserId = int.Parse(User.FindFirstValue("UserId"));
             var (isValid, errorResult, activeOrder) = await CheckOrderAsync(UserId);
@@ -163,10 +165,21 @@ namespace RestaurantManagement.Controllers
                     message = "You already have an unfinished order.",
                     orderId = activeOrder.OrderId
                 });
+            // Kiểm tra bàn có tồn tại không
+            var table = await _context.Tables
+                .FirstOrDefaultAsync(t => t.TableId == dto.TableId && !t.IsDeleted);
+
+            if (table == null)
+                return NotFound(new { message = "Table not found." });
+
+            // Kiểm tra bàn có đang được dùng không
+            if (!table.IsReady)
+                return BadRequest(new { message = "This table is currently occupied." });
 
             var order = new Order
             {
                 UserId = UserId,
+                TableId = dto.TableId,
                 OrderDate = DateTime.Now,
                 TotalAmount = 0,
                 PaymentStatus = "Unpaid",
@@ -175,6 +188,9 @@ namespace RestaurantManagement.Controllers
             };
 
             _context.Orders.Add(order);
+
+            table.IsReady = false;
+
             await _context.SaveChangesAsync();
 
             return CreatedAtAction(nameof(GetById), new { id = order.OrderId }, new
@@ -267,15 +283,19 @@ namespace RestaurantManagement.Controllers
         {
             var order = await _context.Orders
                 .Include(o => o.OrderDetails.Where(od => !od.IsDeleted))
+                .Include(o => o.Table)
                 .FirstOrDefaultAsync(o => o.OrderId == id && !o.IsDeleted);
 
             if (order == null)
                 return NotFound(new { message = "Order not found." });
+
             if (order.PaymentStatus != "Paid")
             {
                 return BadRequest(new { message="Can not confirm unpaid order" });
             }
+
             order.IsFinished = true;
+            order.Table.IsReady = true;
 
             await _context.SaveChangesAsync();
 
@@ -308,26 +328,17 @@ namespace RestaurantManagement.Controllers
                 return BadRequest(new { message = "This order is already in process/completed, it can't be deleted!" });
 
             // Soft delete
-
             order.IsDeleted = true;
             foreach (var detail in order.OrderDetails)
                 detail.IsDeleted = true;
 
+            // Return Table
+            var table = await _context.Tables.FindAsync(order.TableId);
+            if (table != null)
+                table.IsReady = true;
+
             await _context.SaveChangesAsync();
             return Ok(new { message = "Order deleted!" });
         }
-        private static object ToResponse(OrderDetail od) => new
-        {
-            od.OrderDetailId,
-            od.OrderId,
-            od.FoodId,
-            FoodName = od.FoodMenu?.Name,
-            od.Quantity,
-            od.UnitPrice,
-            Subtotal = od.UnitPrice * od.Quantity,
-            od.Status,
-            od.OrderDate
-        };
     }
-
 }

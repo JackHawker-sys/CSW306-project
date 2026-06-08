@@ -14,6 +14,7 @@ namespace RestaurantManagement.Data
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderDetail> OrderDetails { get; set; }
         public DbSet<OrderLog> OrderLogs { get; set; }
+        public DbSet<Table> Tables { get; set; }
 
         // Mối quan hệ giữa các table
         protected override void OnModelCreating(ModelBuilder modelBuilder)

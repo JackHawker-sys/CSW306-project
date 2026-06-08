@@ -59,6 +59,7 @@ async function initOrderButton() {
 
     if (!token) {
         btn.style.display = 'none';
+        hideTableInput();
         return;
     }
 
@@ -85,10 +86,70 @@ function setOrderBtn(state, label) {
 
     if (state === 'start') {
         btn.classList.add('btn-start-order');
-        btn.onclick = handleStartOrder;
+        btn.onclick = showTableInput;
     } else {
         btn.classList.add('btn-active-order');
         btn.onclick = null;
+        hideTableInput();
+    }
+}
+
+function showTableInput() {
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+        showToast('Please login first', 'error');
+        return;
+    }
+
+    let wrapper = document.getElementById('tableInputWrapper');
+    if (wrapper) {
+        // Toggle: nếu đang hiện thì ẩn đi
+        wrapper.classList.toggle('visible');
+        if (wrapper.classList.contains('visible')) {
+            document.getElementById('tableIdInput').focus();
+        }
+        return;
+    }
+
+    // Tạo wrapper lần đầu
+    wrapper = document.createElement('div');
+    wrapper.id = 'tableInputWrapper';
+    wrapper.className = 'table-input-wrapper visible';
+    wrapper.innerHTML = `
+        <input
+            type="number"
+            id="tableIdInput"
+            class="table-id-input"
+            placeholder="Table No."
+            min="1"
+            autocomplete="off"
+        >
+        <button id="confirmOrderBtn" class="btn-confirm-order">
+            <i class="fa-solid fa-check"></i>
+        </button>
+        <button id="cancelOrderBtn" class="btn-cancel-order">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+    `;
+
+    const btn = document.getElementById('orderActionBtn');
+    btn.parentNode.insertBefore(wrapper, btn.nextSibling);
+
+    document.getElementById('tableIdInput').focus();
+
+    document.getElementById('confirmOrderBtn').addEventListener('click', handleStartOrder);
+    document.getElementById('cancelOrderBtn').addEventListener('click', hideTableInput);
+
+    document.getElementById('tableIdInput').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') handleStartOrder();
+        if (e.key === 'Escape') hideTableInput();
+    });
+}
+
+function hideTableInput() {
+    const wrapper = document.getElementById('tableInputWrapper');
+    if (wrapper) {
+        wrapper.classList.remove('visible');
     }
 }
 
@@ -99,9 +160,18 @@ async function handleStartOrder() {
         return;
     }
 
+    const tableInput = document.getElementById('tableIdInput');
+    const tableId = tableInput ? parseInt(tableInput.value, 10) : NaN;
+
+    if (!tableId || isNaN(tableId) || tableId < 1) {
+        showToast('Please enter a valid Table number.', 'error');
+        if (tableInput) tableInput.focus();
+        return;
+    }
+
     const btn = document.getElementById('orderActionBtn');
     btn.disabled = true;
-    btn.textContent = 'Starting';
+    btn.textContent = 'Starting...';
 
     try {
         const res = await fetch(ORDER_URL, {
@@ -109,7 +179,8 @@ async function handleStartOrder() {
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'
-            }
+            },
+            body: JSON.stringify({ tableId })
         });
 
         const data = await res.json();
@@ -128,6 +199,7 @@ async function handleStartOrder() {
         showToast('Starting new Order!');
     } catch (err) {
         showToast(`${err.message}`, 'error');
+        btn.disabled = false;
         setOrderBtn('start', 'Start ordering');
     }
 }

@@ -44,10 +44,14 @@ namespace RestaurantManagement.Tests.Controllers
         {
             // Arrange
             var context = CreateContext();
+
+            context.Tables.Add(new Table { TableId = 1, IsReady = false, IsDeleted = false });
+
             context.Orders.Add(new Order
             {
                 OrderId = 1,
                 UserId = 1,
+                TableId = 1,
                 OrderDate = DateTime.Now,
                 TotalAmount = 50m,
                 PaymentStatus = "Paid",
@@ -72,10 +76,14 @@ namespace RestaurantManagement.Tests.Controllers
         {
             // Arrange
             var context = CreateContext();
+
+            context.Tables.Add(new Table { TableId = 1, IsReady = false, IsDeleted = false });
+
             context.Orders.Add(new Order
             {
                 OrderId = 1,
                 UserId = 1,
+                TableId = 1,
                 OrderDate = DateTime.Now,
                 TotalAmount = 50m,
                 PaymentStatus = "Unpaid",

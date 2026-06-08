@@ -1,6 +1,6 @@
 ﻿namespace RestaurantManagement.DTOs.OrderLog
 {
-    public class Log
+    public class LogDto
     {
         public int LogId { get; set; }
         public string Status { get; set; }

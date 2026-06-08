@@ -1,9 +1,11 @@
 ﻿using RestaurantManagement.DTOs.OrderLog;
+using System.ComponentModel.DataAnnotations;
 namespace RestaurantManagement.DTOs.Order
 {
     public class OrderListDto
     {
         public int OrderId { get; set; }
+        public int TableId { get; set; }
         public string CustomerName { get; set; }  // UserName or FullName
         public DateTime OrderDate { get; set; }
         public decimal TotalAmount { get; set; }
@@ -16,6 +18,7 @@ namespace RestaurantManagement.DTOs.Order
     public class OrderDetailResponseDto // cũng có thể thay = dto của kha nếu cần
     {
         public int OrderId { get; set; }
+        public int TableId { get; set; }
         public string CustomerName { get; set; }
         public DateTime OrderDate { get; set; }
         public decimal TotalAmount { get; set; }
@@ -42,5 +45,10 @@ namespace RestaurantManagement.DTOs.Order
     {
         public string PaymentStatus { get; set; }
         // Unpaid |  ReadyForCheckout | Suspended
+    }
+    public class CreateOrderDto
+    {
+        [Required]
+        public int TableId { get; set; }
     }
 }

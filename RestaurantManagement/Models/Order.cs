@@ -16,6 +16,11 @@ namespace RestaurantManagement.Models
         public virtual User User { get; set; }
 
         [Required]
+        public int TableId { get; set; }
+        [ForeignKey("TableId")]
+        public virtual Table Table { get; set; }
+
+        [Required]
         public DateTime OrderDate { get; set; }
 
         [Column(TypeName = "decimal(18,2)")]
