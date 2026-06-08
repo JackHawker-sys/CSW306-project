@@ -42,10 +42,42 @@ namespace RestaurantManagement.Controller
 
         [HttpGet("dashboard")]
         [Authorize(Roles = "Admin")]
-        public IActionResult GetAdminDashboard()
+        public async Task<IActionResult> GetAdminDashboard()
         {
-            //Đưa code lấy dữ liệu Order về bỏ vào đây
-            return Ok("Welcome admin!");
+            var now = DateTime.Now;
+            var today = now.Date; // 2025-06-08 00:00:00
+
+            var todayOrders = await _context.Orders
+                .Where(o => !o.IsDeleted && o.OrderDate.Date == today)
+                .Include(o => o.User)
+                .Include(o => o.OrderDetails.Where(od => !od.IsDeleted))
+                .OrderByDescending(o => o.OrderDate)
+                .ToListAsync();
+
+            var totalRevenue = todayOrders
+                .Where(o => o.PaymentStatus == "Paid")
+                .Sum(o => o.TotalAmount);
+
+            var orderList = todayOrders.Select(o => new
+            {
+                o.OrderId,
+                o.TableId,
+                CustomerName = o.User.FullName ?? o.User.Username,
+                o.OrderDate,
+                o.TotalAmount,
+                o.PaymentStatus,
+                o.IsFinished,
+                TotalItems = o.OrderDetails.Count(od => !od.IsDeleted)
+            }).ToList();
+
+            return Ok(new
+            {
+                CurrentDateTime = now,
+                Date = today.ToString("yyyy-MM-dd"),
+                TotalRevenue = totalRevenue,
+                TotalOrders = todayOrders.Count,
+                Orders = orderList
+            });
         }
 
         // Admin xem user đang hoạt động
