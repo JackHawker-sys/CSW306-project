@@ -383,6 +383,7 @@ window.viewOrderDetails = async function (orderId) {
             <div style="max-width: 550px; margin: 0 auto;">
                 <h3 style="color: var(--dark-green); margin-bottom: 20px;">Order #${order.orderId}</h3>
                 <p><strong><i class="fa-solid fa-user"></i> Customer:</strong> ${escapeHtml(order.customerName)}</p>
+                <p><strong><i class="fa-solid fa-table-cells-large"></i> Table:</strong> ${order.tableId != null ? "#" + order.tableId : "N/A"}</p>
                 <p><strong><i class="fa-regular fa-calendar"></i> Date:</strong> ${new Date(order.orderDate).toLocaleString()}</p>
                 <p><strong><i class="fa-solid fa-credit-card"></i> Payment Status:</strong> ${order.paymentStatus || 'Unpaid'}</p>
                 <p><strong><i class="fa-solid fa-flag-checkered"></i> Order Status:</strong> ${order.isFinished ? 'Completed' : 'In Progress'}</p>

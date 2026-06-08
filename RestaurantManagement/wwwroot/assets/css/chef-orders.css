@@ -18,7 +18,9 @@ body {
     background-color: #f0f2f5;
 }
 
-h1, h2, h3 {
+h1,
+h2,
+h3 {
     font-family: 'Nunito', sans-serif;
 }
 
@@ -71,9 +73,9 @@ h1, h2, h3 {
     color: var(--main-yellow);
 }
 
-    .chef-info i {
-        font-size: 24px;
-    }
+.chef-info i {
+    font-size: 24px;
+}
 
 .logout-btn {
     display: inline-flex;
@@ -90,9 +92,9 @@ h1, h2, h3 {
     transition: all 0.3s;
 }
 
-    .logout-btn:hover {
-        background-color: #c82333;
-    }
+.logout-btn:hover {
+    background-color: #c82333;
+}
 
 /* Main Container */
 .chef-container {
@@ -110,10 +112,10 @@ h1, h2, h3 {
     gap: 15px;
 }
 
-    .chef-header h1 {
-        color: var(--dark-green);
-        font-size: 28px;
-    }
+.chef-header h1 {
+    color: var(--dark-green);
+    font-size: 28px;
+}
 
 .refresh-btn {
     display: inline-flex;
@@ -129,9 +131,9 @@ h1, h2, h3 {
     transition: all 0.3s;
 }
 
-    .refresh-btn:hover {
-        background-color: #138496;
-    }
+.refresh-btn:hover {
+    background-color: #138496;
+}
 
 /* Legend */
 .legend {
@@ -157,17 +159,17 @@ h1, h2, h3 {
     border-radius: 4px;
 }
 
-    .legend-color.urgent {
-        background: var(--urgent-red);
-    }
+.legend-color.urgent {
+    background: var(--urgent-red);
+}
 
-    .legend-color.warning {
-        background: var(--warning-yellow);
-    }
+.legend-color.warning {
+    background: var(--warning-yellow);
+}
 
-    .legend-color.normal {
-        background: var(--normal-green);
-    }
+.legend-color.normal {
+    background: var(--normal-green);
+}
 
 /* Auto refresh */
 .auto-refresh {
@@ -178,9 +180,9 @@ h1, h2, h3 {
     gap: 5px;
 }
 
-    .auto-refresh i {
-        color: var(--dark-green);
-    }
+.auto-refresh i {
+    color: var(--dark-green);
+}
 
 /* Filter Tabs */
 .filter-tabs {
@@ -201,14 +203,14 @@ h1, h2, h3 {
     transition: all 0.3s;
 }
 
-    .filter-btn.active {
-        background-color: var(--dark-green);
-        color: var(--main-yellow);
-    }
+.filter-btn.active {
+    background-color: var(--dark-green);
+    color: var(--main-yellow);
+}
 
-    .filter-btn:hover:not(.active) {
-        background-color: #dee2e6;
-    }
+.filter-btn:hover:not(.active) {
+    background-color: #dee2e6;
+}
 
 /* Orders Grid */
 .orders-grid {
@@ -227,10 +229,10 @@ h1, h2, h3 {
     animation: fadeInUp 0.4s ease both;
 }
 
-    .order-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-    }
+.order-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
 
 @keyframes fadeInUp {
     from {
@@ -285,20 +287,20 @@ h1, h2, h3 {
     font-weight: 600;
 }
 
-    .waiting-time.urgent {
-        background: var(--urgent-red);
-        color: white;
-    }
+.waiting-time.urgent {
+    background: var(--urgent-red);
+    color: white;
+}
 
-    .waiting-time.warning {
-        background: var(--warning-yellow);
-        color: #333;
-    }
+.waiting-time.warning {
+    background: var(--warning-yellow);
+    color: #333;
+}
 
-    .waiting-time.normal {
-        background: var(--normal-green);
-        color: white;
-    }
+.waiting-time.normal {
+    background: var(--normal-green);
+    color: white;
+}
 
 .order-card-body {
     padding: 15px 20px;
@@ -313,10 +315,10 @@ h1, h2, h3 {
     border-bottom: 1px solid #eee;
 }
 
-    .customer-info i {
-        font-size: 18px;
-        color: var(--dark-green);
-    }
+.customer-info i {
+    font-size: 18px;
+    color: var(--dark-green);
+}
 
 .order-time {
     display: flex;
@@ -370,20 +372,20 @@ h1, h2, h3 {
     text-align: center;
 }
 
-    .item-status.Pending {
-        background: #ffc107;
-        color: #333;
-    }
+.item-status.Pending {
+    background: #ffc107;
+    color: #333;
+}
 
-    .item-status.Processing {
-        background: #17a2b8;
-        color: white;
-    }
+.item-status.Processing {
+    background: #17a2b8;
+    color: white;
+}
 
-    .item-status.Completed {
-        background: #28a745;
-        color: white;
-    }
+.item-status.Completed {
+    background: #28a745;
+    color: white;
+}
 
 /* Small action buttons inside item */
 .action-btn-small {
@@ -402,18 +404,18 @@ h1, h2, h3 {
     color: white;
 }
 
-    .btn-processing-small:hover {
-        background: #138496;
-    }
+.btn-processing-small:hover {
+    background: #138496;
+}
 
 .btn-complete-small {
     background: var(--dark-green);
     color: var(--main-yellow);
 }
 
-    .btn-complete-small:hover {
-        background: var(--green-hover);
-    }
+.btn-complete-small:hover {
+    background: var(--green-hover);
+}
 
 /* Order Card Footer */
 .order-card-footer {
@@ -438,18 +440,18 @@ h1, h2, h3 {
     color: white;
 }
 
-    .btn-processing:hover {
-        background: #138496;
-    }
+.btn-processing:hover {
+    background: #138496;
+}
 
 .btn-complete {
     background: var(--dark-green);
     color: var(--main-yellow);
 }
 
-    .btn-complete:hover {
-        background: var(--green-hover);
-    }
+.btn-complete:hover {
+    background: var(--green-hover);
+}
 
 /* Modal */
 .modal-custom {
@@ -465,9 +467,9 @@ h1, h2, h3 {
     justify-content: center;
 }
 
-    .modal-custom.show {
-        display: flex;
-    }
+.modal-custom.show {
+    display: flex;
+}
 
 .modal-content-custom {
     background: white;
@@ -478,10 +480,10 @@ h1, h2, h3 {
     text-align: center;
 }
 
-    .modal-content-custom h3 {
-        color: var(--dark-green);
-        margin-bottom: 15px;
-    }
+.modal-content-custom h3 {
+    color: var(--dark-green);
+    margin-bottom: 15px;
+}
 
 .modal-buttons {
     display: flex;
@@ -500,9 +502,9 @@ h1, h2, h3 {
     font-weight: 600;
 }
 
-    .btn-confirm:hover {
-        background: var(--green-hover);
-    }
+.btn-confirm:hover {
+    background: var(--green-hover);
+}
 
 .btn-cancel {
     padding: 10px 25px;
@@ -514,20 +516,21 @@ h1, h2, h3 {
     font-weight: 600;
 }
 
-    .btn-cancel:hover {
-        background: #5a6268;
-    }
+.btn-cancel:hover {
+    background: #5a6268;
+}
 
 /* Loading & Empty States */
-.loading-state, .empty-state {
+.loading-state,
+.empty-state {
     text-align: center;
     padding: 80px 20px;
     color: #666;
 }
 
-    .empty-state i {
-        margin-bottom: 15px;
-    }
+.empty-state i {
+    margin-bottom: 15px;
+}
 
 .spinner-custom {
     width: 50px;
@@ -560,10 +563,10 @@ h1, h2, h3 {
     font-weight: 500;
 }
 
-    .toast-message.error {
-        background: #dc3545;
-        color: white;
-    }
+.toast-message.error {
+    background: #dc3545;
+    color: white;
+}
 
 @keyframes fadeOut {
     0% {
@@ -672,9 +675,9 @@ h1, h2, h3 {
     color: white;
 }
 
-    .btn-ready-small:hover {
-        background: #218838;
-    }
+.btn-ready-small:hover {
+    background: #218838;
+}
 
 /* Ready status badge */
 .item-status.Ready {
@@ -699,3 +702,23 @@ h1, h2, h3 {
 }
 
 
+
+/* Table badge — shown next to dish name in card header */
+.table-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 10px;
+    background: var(--main-yellow);
+    color: var(--dark-green);
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 800;
+    font-family: 'Nunito', sans-serif;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.table-badge i {
+    font-size: 11px;
+}

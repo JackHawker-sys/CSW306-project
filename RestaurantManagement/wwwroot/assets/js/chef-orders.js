@@ -125,7 +125,8 @@ async function loadOrders() {
                 .then(details => details.map(d => ({
                     ...d,
                     orderId: o.orderId,
-                    customerName: o.customerName || 'Guest'
+                    customerName: o.customerName || 'Guest',
+                    tableId: o.tableId ?? null
                 })))
         );
 
@@ -208,7 +209,10 @@ function renderDetailRow(d) {
     <div class="order-card ${priority}" data-detail-id="${d.orderDetailId}">
         <div class="order-card-header">
             <div>
-                <span class="order-id">${escapeHtml(d.foodName || 'Unknown dish')}</span>
+                <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                    <span class="order-id">${escapeHtml(d.foodName || 'Unknown dish')}</span>
+                    ${d.tableId != null ? `<span class="table-badge"><i class="fa-solid fa-table-cells-large"></i> Table ${d.tableId}</span>` : ''}
+                </div>
                 <div style="font-size:12px;margin-top:4px;opacity:.85;">
                     <i class="fa-regular fa-clock"></i> ${timeStr}
                     &nbsp;·&nbsp;
