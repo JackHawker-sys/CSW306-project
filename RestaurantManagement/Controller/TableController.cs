@@ -9,7 +9,7 @@ namespace RestaurantManagement.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize(Policy = "Admin")]  // toàn bộ controller chỉ Admin
+    
     public class TableController : ControllerBase
     {
         private readonly RestaurantManagementContext _context;
@@ -53,6 +53,7 @@ namespace RestaurantManagement.Controllers
         }
 
         [HttpPost]
+        [Authorize(Policy = "Admin")]
         public async Task<IActionResult> Create([FromBody] CreateTableDto dto)
         {
             // Kiểm tra ID đã tồn tại chưa (kể cả đã bị soft delete)
@@ -81,6 +82,7 @@ namespace RestaurantManagement.Controllers
         }
 
         [HttpPut("{id}/status")]
+        [Authorize(Policy = "Admin")]
         public async Task<IActionResult> UpdateStatus(int id, [FromBody] UpdateTableStatusDto dto)
         {
             var table = await _context.Tables
@@ -111,6 +113,7 @@ namespace RestaurantManagement.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Policy = "Admin")]
         public async Task<IActionResult> Delete(int id)
         {
             var table = await _context.Tables
